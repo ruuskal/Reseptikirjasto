@@ -1,10 +1,40 @@
 from app import app
 from flask import render_template, request, redirect
-import users
+import users, recipes
+
+
+@app.route("/newrecipe")
+def newrecipe():
+    return render_template("newrecipe.html")
+
+@app.route("/send", methods=["POST"])
+def send():
+    name = request.form["name"]
+    ingredients_text = request.form["ingredients"]
+    steps = request.form["instructions"]
+    recipe_id = recipes.create(name, ingredients_text, steps)
+    if recipe_id is not None:
+        return redirect("/profile/recipes/"+str(recipe_id))
+    else:
+        return render_template("error.html", message="Reseptin luominen epäonnistui.")
+
+@app.route("/profile/recipes/<int:id>")
+def show_recipe(id):
+    allow = False
+    if users.user_id() == recipes.get_user_id(id):
+        allow = True
+    if not allow:
+        return render_template("error.html", message="Ei kuulu omiin resepteihisi.")
+
+    name = recipes.get_name(id)
+    ingredients = recipes.get_ingredients(id)
+    instructions = recipes.get_instructions(id)
+    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    recipes_list = recipes.get_own_recipes()
+    return render_template("index.html", own_recipes=recipes_list)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

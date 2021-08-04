@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>{{ name }}</h1>
+<br>
+
+<table>
+    <tr>
+        <th>Raaka-aine</th>
+        <th>Määrä</th>
+        <th>Yksikkö</th>
+    </tr>
+    {% for i in ingredients %}
+    <tr>
+        <th>{{ i[0] }}</th>
+        <th>{{ i[1] }}</th>
+        <th>{{ i[2] }}</th>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Ohjeet:</h3>
+<ol>
+    {% for step in instructions %}
+    <li>{{ step[0] }}</li>
+    {% endfor %}
+</ol>
+
+{% endblock %}
