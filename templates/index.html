@@ -1,0 +1,10 @@
+{% if session.user_id %}
+<title>Oma sivu</title>
+<b>Tervetuloa {{ session.user_name }}!</b>
+<br>
+
+<a href="/logout">Kirjaudu ulos</a>
+{% else %}
+<title>Et ole kirjautunut sisään</title>
+<a href="/login">Kirjaudu sisään</a> | <a href="/register">Luo tunnus</a>
+{% endif %}
