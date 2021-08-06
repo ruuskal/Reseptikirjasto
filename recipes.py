@@ -11,16 +11,19 @@ def create(name, ingredients_text, steps):
 
     sql2 = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql2, {"user_id":user_id, "recipe_id":recipe_id})
-    print("lisätty kirjastoon")
 
     for rows in ingredients_text.split("\n"):
         cell = rows.strip().split(";")
-        print(cell)
         if len(cell) != 3:
             continue
+        try:
+            amount = float(cell[1])
+        except ValueError:
+            return None
+            break
         sql3 = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
             VALUES (:ingredient, :amount, :unit, :recipe_id)"""
-        db.session.execute(sql3, {"ingredient":cell[0], "amount":cell[1], "unit":cell[2], "recipe_id":recipe_id})
+        db.session.execute(sql3, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":recipe_id})
     
     sequence = 0
     for x in steps.split(";"):
@@ -66,7 +69,7 @@ def add_ingredients(recipe_id, ingredients_text):
 def get_name(id):
     sql = "SELECT name FROM recipes WHERE id=:id"
     result = db.session.execute(sql, {"id": id})
-    return result.fetchone()[0] # Täytyy olla [0], jotta tulee kakku, eikä 'kakku',
+    return result.fetchone()[0]
 
 # Return list of ingredients
 def get_ingredients(recipe_id):
@@ -90,5 +93,19 @@ def get_user_id(recipe_id):
     result = db.session.execute(sql, {"recipe_id": recipe_id})
     return result.fetchone()[0]
 
-#ToDo: 1) Tee rajoitukset syötettävään tietoon. 2) Mahdollista reseptien muokkaaminen ja poistaminen. 3)
-#       Mahdollista reseptien julkaiseminen.
+#Change recipe's name
+def change_name(id, name):
+    sql = """UPDATE recipes
+            SET name=:name
+            WHERE id=:id"""
+    result = db.session.execute(sql, {"name": name, "id": id})
+    db.session.commit()
+    return True
+
+#Delete recipe 
+def delete_recipe(id):
+    sql = """DELETE FROM recipes
+                WHERE id=:id"""
+    result = db.session.execute(sql, {"id": id})
+    db.session.commit()
+    return True

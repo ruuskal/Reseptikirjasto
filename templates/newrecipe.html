@@ -1,11 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
 
-<form action="/send" method="post" id="new_recipe">
+<form action="/create_recipe" method="post" id="new_recipe">
     Reseptin nimi: <br>
     <textarea name="name" rows="1" cols="25"></textarea>
     <br>
     <textarea name="ingredients" rows="8" cols="40" maxlength="10000">
-    raaka-aine;määrä;yksikkö;
-    porkkana;0.5;kg;
+    raaka-aine;määrä(numeroina);yksikkö
+    porkkana;0.5;kg
     </textarea></p> 
     <br>
     <textarea name="instructions" rows="8" cols="40" maxlength="1000">
@@ -14,3 +16,6 @@
     </textarea>
     <input type="submit" value="Tallenna resepti">
 </form>
+<a href="/">Katso omat reseptit</a>
+
+{% endblock %}

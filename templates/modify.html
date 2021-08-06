@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>{{ name }}</h2>
+<form action="/modify_name/{{ id }}" method="post">
+    <label for="name">Anna uusi nimi:</label>
+    <input type="text" name="name">
+    <input type="submit" value="Vaihda nimi">
+</form>
+
+<!-- <form action="/modify_ingredients/{{ id }}" method="post">
+    <table>
+    {% for i in ingredients %}
+    <tr>
+        <th>{{ i[0] }}</th>
+        <th>{{ i[1] }}</th>
+        <th>{{ i[2] }}</th>
+        <th><label for="ingredient{{ i }}">Anna uusi:</label>
+            <input type="text" name="ingredient{{ i }}">
+            <input type="submit" value="Vaihda"></th>
+    </tr>
+    {% endfor %}
+    </table>
+</form> -->
+
+<form action="/delete_recipe/{{ id }}" method="post">
+    <input type="submit" value="Poista resepti">
+</form>
+{% endblock %}
