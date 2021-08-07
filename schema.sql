@@ -1,12 +1,12 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY, 
-    username TEXT UNIQUE, 
+    username TEXT, 
     password TEXT
 );
 
 CREATE TABLE recipes (
     id SERIAL PRIMARY KEY, 
-    name INTEGER NOT NULL, 
+    name INTEGER NOT NULL,
     added_by INTEGER REFERENCES users
 );
 
@@ -28,5 +28,5 @@ CREATE TABLE instructions (
 CREATE TABLE library (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users,
-    recipe_id INTEGER REFERENCES recipes ON DELETE CASCADE,
+    recipe_id INTEGER REFERENCES recipes ON DELETE CASCADE
 );
