@@ -6,7 +6,7 @@ CREATE TABLE users (
 
 CREATE TABLE recipes (
     id SERIAL PRIMARY KEY, 
-    name INTEGER NOT NULL,
+    name TEXT NOT NULL,
     added_by INTEGER REFERENCES users
 );
 
