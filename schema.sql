@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY, 
-    username TEXT, 
-    password TEXT UNIQUE
+    username TEXT UNIQUE, 
+    password TEXT
 );
 
 CREATE TABLE recipes (
