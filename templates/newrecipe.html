@@ -3,11 +3,12 @@
 
 <form action="/create_recipe" method="post" id="new_recipe">
     Reseptin nimi: <br>
-    <textarea name="name" rows="1" cols="25"></textarea>
+    <input type="text" name="name" minlength="1" maxlength="25"></textarea>
     <br>
-    <textarea name="ingredients" rows="8" cols="40" maxlength="10000">
-    raaka-aine;määrä(numeroina);yksikkö
+    Anna raaka-aineet omilla riveillään muodossa "raaka-aine;määrä(numeroina);yksikkö"
+    <textarea name="ingredients" rows="8" cols="40" maxlength="1000">
     porkkana;0.5;kg
+    bataatti tai peruna;1;kg
     </textarea></p> 
     <br>
     <textarea name="instructions" rows="8" cols="40" maxlength="1000">
@@ -19,3 +20,4 @@
 <a href="/">Katso omat reseptit</a>
 
 {% endblock %}
+

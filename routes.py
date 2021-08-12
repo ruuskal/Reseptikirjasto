@@ -1,6 +1,7 @@
 from app import app
 from flask import render_template, request, redirect
 import users, recipes
+import re
 
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
@@ -36,13 +37,20 @@ def newrecipe():
 @app.route("/create_recipe", methods=["POST"])
 def send():
     name = request.form["name"]
+    if name.strip() == "":
+        return render_template("error.html", message="Reseptillä pitää olla nimi.")
     ingredients_text = request.form["ingredients"]
+    if ingredients_text == "":
+        return render_template("error.html", message="Reseptillä pitää olla ainakin yksi ainesosa.")
     steps = request.form["instructions"]
+    if steps.strip() == "":
+        return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
     recipe_id = recipes.create(name, ingredients_text, steps)
     if recipe_id is not None:
         return redirect("/profile/recipes/"+str(recipe_id))
     else:
-        return render_template("error.html", message="Reseptin luominen epäonnistui.")
+        return render_template("error.html", message="Reseptin luominen epäonnistui. Tarkista raaka-aineiden kirjoitusasu.")
+
 
 @app.route("/profile/recipes/<int:id>")
 def show_recipe(id):
@@ -65,7 +73,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
-        return render_template("register.html") # palauttaa sivun uuden tunnuksen tekemiseen
+        return render_template("register.html")
     if request.method == "POST": 
         username = request.form["username"]
         password1 = request.form["password1"]

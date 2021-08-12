@@ -4,7 +4,7 @@ import users
 def create(name, ingredients_text, steps):
     user_id = users.user_id()
     if user_id == 0:
-        return False
+        return None
     sql = "INSERT INTO recipes (name, added_by) VALUES (:name, :user_id) RETURNING id"
     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
     recipe_id = recipe.first()[0]
@@ -13,17 +13,22 @@ def create(name, ingredients_text, steps):
     db.session.execute(sql2, {"user_id":user_id, "recipe_id":recipe_id})
 
     for rows in ingredients_text.split("\n"):
-        cell = rows.strip().split(";")
-        if len(cell) != 3:
-            continue
-        try:
-            amount = float(cell[1])
-        except ValueError:
-            return None
+        if rows.strip() == "":
             break
-        sql3 = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
-            VALUES (:ingredient, :amount, :unit, :recipe_id)"""
-        db.session.execute(sql3, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":recipe_id})
+        elif rows.count(";") != 2:
+            return None
+        else:
+            cell = rows.strip().split(";")
+            if len(cell) != 3:
+                continue
+            try:
+                amount = float(cell[1])
+            except ValueError:
+                return None
+                break
+            sql3 = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
+                    VALUES (:ingredient, :amount, :unit, :recipe_id)"""
+            db.session.execute(sql3, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":recipe_id})
     
     sequence = 0
     for x in steps.split(";"):
