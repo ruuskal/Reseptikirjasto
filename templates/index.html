@@ -12,8 +12,8 @@
     <li><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }}</a></li>
     {% endfor %}
 </ul>
+<a href="/{{ user_id }}/newrecipe">Luo resepti</a>  <a href="/logout">Kirjaudu ulos</a>
 
-<a href="/newrecipe">Luo resepti</a>  <a href="/logout">Kirjaudu ulos</a>
 {% else %}
 <title>Et ole kirjautunut sisään</title>
 <a href="/login">Kirjaudu sisään</a> | <a href="/register">Luo tunnus</a>

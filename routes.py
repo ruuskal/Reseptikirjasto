@@ -1,7 +1,6 @@
 from app import app
 from flask import render_template, request, redirect
 import users, recipes
-import re
 
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
@@ -10,11 +9,14 @@ def delete_recipe(id):
     else:
         return render_template("error.html", message="Reseptin poistaminen epäonnistui.")
 
-@app.route("/modify/<int:id>", methods=["GET"])
-def show_modify(id):
-    recipe_name=recipes.get_name(id)
-    old_ingredients = recipes.get_ingredients(id)
-    return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients)
+@app.route("/<int:user_id>/modify/<int:id>", methods=["GET"])
+def show_modify(user_id, id):
+    if users.user_id() == user_id:
+        recipe_name = recipes.get_name(id)
+        old_ingredients = recipes.get_ingredients(id)
+        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients)
+    else:
+        return render_template("error.html", message="Ei ole oma reseptisi.")
 
 @app.route("/modify_name/<int:id>", methods=["POST"])
 def modify_name(id):
@@ -30,9 +32,12 @@ def modify_ingredient(id):
     print(ingredient)
     return redirect("/profile/recipes/"+str(id))
 
-@app.route("/newrecipe")
-def newrecipe():
-    return render_template("newrecipe.html")
+@app.route("/<int:id>/newrecipe", methods=["GET"])
+def newrecipe(id):
+    if users.user_id() == id:
+        return render_template("newrecipe.html")
+    else:
+        return render_template("error.html", message="Kirjaudu sisään.")
 
 @app.route("/create_recipe", methods=["POST"])
 def send():
@@ -52,10 +57,11 @@ def send():
         return render_template("error.html", message="Reseptin luominen epäonnistui. Tarkista raaka-aineiden kirjoitusasu.")
 
 
-@app.route("/profile/recipes/<int:id>")
+@app.route("/profile/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
     allow = False
-    if users.user_id() == recipes.get_user_id(id):
+    user_id  = users.user_id()
+    if user_id == recipes.get_user_id(id):
         allow = True
     if not allow:
         return render_template("error.html", message="Ei kuulu omiin resepteihisi.")
@@ -63,12 +69,13 @@ def show_recipe(id):
     name = recipes.get_name(id)
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
-    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, id=id)
+    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id)
 
 @app.route("/")
 def index():
     recipes_list = recipes.get_own_recipes()
-    return render_template("index.html", own_recipes=recipes_list)
+    user_id = users.user_id()
+    return render_template("index.html", own_recipes=recipes_list, user_id=user_id)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -79,7 +86,7 @@ def register():
         password1 = request.form["password1"]
         password2 = request.form["password2"]
         if password1 != password2:
-            return render_template("error.html", message="Passwords don't match.")
+            return render_template("error.html", message="Salasanat eivät täsmää.")
         if users.register(username, password1):
             return redirect("/")
         else:
