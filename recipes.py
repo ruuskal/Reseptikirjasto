@@ -11,21 +11,37 @@ def create(name, ingredients, steps):
 
     sql2 = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql2, {"user_id":user_id, "recipe_id":recipe_id})
-    
-    sequence = 0
-    for x in steps.split(";"):
-        sequence += 1
-        step = x.strip()
-        sql4 = """INSERT INTO instructions (step, sequence, recipe_id)
-            VALUES (:step, :sequence, :recipe_id)"""
-        db.session.execute(sql4, {"step":step, "sequence":sequence, "recipe_id":recipe_id})
 
-    if add_ingredients(recipe_id, ingredients):
+    if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
         db.session.commit() # Haittaako, että commit on vain täällä, eikä metodissa add_ingredients?
         return recipe_id
     else:
         return None
-     
+
+# Add instructions to recipe
+def add_instructions(id, steps):
+    sequence = 0
+    for x in steps.split(";"):
+        if x.strip() != "":
+            sequence += 1
+            step = x.strip()
+            sql = """INSERT INTO instructions (step, sequence, recipe_id)
+                VALUES (:step, :sequence, :recipe_id)"""
+            db.session.execute(sql, {"step":step, "sequence":sequence, "recipe_id":id})
+    return True
+
+# Change instructions
+def change_instructions(id, new_instructions):
+    sql_del = """DELETE FROM instructions
+                WHERE recipe_id=:id"""
+    db.session.execute(sql_del, {"id":id})
+    if add_instructions(id, new_instructions):
+        db.session.commit()
+        return True
+    else:
+        return False
+
+
 # Add ingredients to recipe
 def add_ingredients(id, ingredients):
     for rows in ingredients.split("\n"):

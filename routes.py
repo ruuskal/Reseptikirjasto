@@ -14,14 +14,17 @@ def show_modify(user_id, id):
     if users.user_id() == user_id:
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
-        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients)
+        old_instructions = recipes.get_instructions(id)
+        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions)
     else:
         return render_template("error.html", message="Ei ole oma reseptisi.")
 
 @app.route("/modify_name/<int:id>", methods=["POST"])
 def modify_name(id):
     name = request.form["name"]
-    if recipes.change_name(id, name):
+    if name.strip() == "":
+        return render_template("error.html", message="Reseptillä pitää olla nimi.")
+    elif recipes.change_name(id, name):
         return redirect("/profile/recipes/"+str(id))
     else:
         return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
@@ -33,6 +36,17 @@ def modify_ingredients(id):
         return redirect("/profile/recipes/"+str(id))
     else:
         return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
+
+@app.route("/modify_instructions/<int:id>", methods=["POST"])
+def modify_instructions(id):
+    instructions = request.form["instructions"]
+    if instructions.strip() == "":
+        return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
+    elif recipes.change_instructions(id, instructions):
+        return redirect("/profile/recipes/"+str(id))
+    else:
+        return render_template("error.html", message="Ei onnistunut")
+
 
 @app.route("/<int:id>/newrecipe", methods=["GET"])
 def newrecipe(id):

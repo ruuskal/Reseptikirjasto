@@ -8,20 +8,6 @@
 </form>
 <br>
 
-<!-- <form action="/modify_ingredients/{{ id }}" method="post">
-    <table>
-    {% for i in ingredients %}
-    <tr>
-        <th>{{ i[0] }}</th>
-        <th>{{ i[1] }}</th>
-        <th>{{ i[2] }}</th>
-        <th><label for="ingredient{{ i }}">Anna uusi:</label>
-            <input type="text" name="ingredient{{ i }}">
-            <input type="submit" value="Vaihda"></th>
-    </tr>
-    {% endfor %}
-    </table>
-</form> -->
 <form action="/modify_ingredients/{{ id }}" method="post">
     <textarea name="ingredients" rows="8" cols="40" maxlength="1000">
         {% for i in old_ingredients %}
@@ -29,6 +15,16 @@
         {% endfor %}
     </textarea>
     <input type="submit" value="Vaihda raaka-aineet">
+</form>
+<br>
+
+<form action="/modify_instructions/{{ id }}" method="post">
+    <textarea name="instructions" rows="8" cols="40" maxlength="1000">
+       {% for i in old_instructions %}
+       {{ i[0] }};
+       {% endfor %}
+    </textarea>
+        <input type="submit" value="Vaihda ohjeet">
 </form>
 
 <form action="/delete_recipe/{{ id }}" method="post">
