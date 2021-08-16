@@ -27,10 +27,12 @@ def modify_name(id):
         return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
 
 @app.route("/modify_ingredients/<int:id>", methods=["POST"])
-def modify_ingredient(id):
-    ingredient = request.form["ingredient1"]
-    print(ingredient)
-    return redirect("/profile/recipes/"+str(id))
+def modify_ingredients(id):
+    new_ingredients = request.form["ingredients"]
+    if recipes.change_ingredients(id, new_ingredients):
+        return redirect("/profile/recipes/"+str(id))
+    else:
+        return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
 
 @app.route("/<int:id>/newrecipe", methods=["GET"])
 def newrecipe(id):
