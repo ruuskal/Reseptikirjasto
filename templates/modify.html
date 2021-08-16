@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
+<a href="/">Etusivulle</a>
+<br>
 <h2>{{ name }}</h2>
 <form action="/modify_name/{{ id }}" method="post">
     <label for="name">Anna uusi nimi:</label>
@@ -30,4 +32,6 @@
 <form action="/delete_recipe/{{ id }}" method="post">
     <input type="submit" value="Poista resepti">
 </form>
+
+
 {% endblock %}

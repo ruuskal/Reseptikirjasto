@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-
+<a href="/">Etusivulle</a>
+<br>
+<h2>Luo uusi resepti</h2>
 <form action="/create_recipe" method="post" id="new_recipe">
     Reseptin nimi: <br>
     <input type="text" name="name" minlength="1" maxlength="25"></textarea>
@@ -18,7 +20,6 @@
     </textarea>
     <input type="submit" value="Tallenna resepti">
 </form>
-<a href="/">Katso omat reseptit</a>
 
 {% endblock %}
 

@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-
-<h1>{{ name }}</h1>
+<a href="/">Etusivulle</a>
+<br>
+<h2>{{ name }}</h2>
 <br>
 
 <table>
@@ -12,9 +13,9 @@
     </tr>
     {% for i in ingredients %}
     <tr>
-        <th>{{ i[0] }}</th>
-        <th>{{ i[1] }}</th>
-        <th>{{ i[2] }}</th>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+        <td>{{ i[2] }}</td>
     </tr>
     {% endfor %}
 </table>
@@ -28,4 +29,5 @@
 <a href="/{{ user_id }}/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
 <br>
 <a href="/">Katso omat reseptit</a>
+
 {% endblock %}

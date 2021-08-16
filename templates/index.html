@@ -2,17 +2,19 @@
 {% block content %}
 
 {% if session.user_id %}
-<title>Oma sivu</title>
-<b>Tervetuloa {{ session.user_name }}!</b>
 <br>
-<h3>Omat Reseptit:</h3> 
-<hr>
+<a href="/logout">Kirjaudu ulos</a>
+<br>
+<h2>Tervetuloa {{ session.user_name }}!</h2>
+<br>
+Omat reseptit:
+<br>
 <ul>
     {% for recipe in own_recipes %}
-    <li><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }}</a></li>
+    <ul><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }}</a></ul>
     {% endfor %}
 </ul>
-<a href="/{{ user_id }}/newrecipe">Luo resepti</a>  <a href="/logout">Kirjaudu ulos</a>
+<a href="/{{ user_id }}/newrecipe">Luo resepti</a>
 
 {% else %}
 <title>Et ole kirjautunut sisään</title>

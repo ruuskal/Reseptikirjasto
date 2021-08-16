@@ -4,3 +4,20 @@ body {
     font-family: 'Garamond', serif;
     background-color: rgba(182, 226, 189, 0.907);
 }
+
+table {
+    border-collapse: collapse;
+    width: 80%;
+
+}
+
+th, td { 
+    text-align: center;
+    border-bottom: 1px solid rgb(3, 3, 3);
+}
+
+tr:hover {background-color: antiquewhite;}
+
+ul {
+    list-style: none;
+}
