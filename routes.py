@@ -8,10 +8,6 @@ def search_name():
     result = recipes.search_by_name(name)
     return render_template("results.html", recipes=result, search_term=name)
 
-# @app.route("/results", methods=["GET"])
-# def show_results():
-#     return render_template("results.html", recipes=)
-
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
     if recipes.delete_recipe(id):
@@ -19,13 +15,21 @@ def delete_recipe(id):
     else:
         return render_template("error.html", message="Reseptin poistaminen epäonnistui.")
 
+@app.route("/modify_public/<int:id>", methods=["POST"])
+def modify_publicity(id):
+    status = request.form["publicity"]
+    recipes.set_public(id, status)
+    return redirect("/")
+
 @app.route("/<int:user_id>/modify/<int:id>", methods=["GET"])
 def show_modify(user_id, id):
-    if users.user_id() == user_id:
+    creator_id = recipes.get_user_id(id)
+    if user_id == creator_id:
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
         old_instructions = recipes.get_instructions(id)
-        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions)
+        public_status = recipes.get_public(id)
+        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, public=public_status)
     else:
         return render_template("error.html", message="Ei ole oma reseptisi.")
 
@@ -87,6 +91,8 @@ def show_recipe(id):
     allow = False
     user_id  = users.user_id()
     if user_id == recipes.get_user_id(id):
+        allow = True
+    elif recipes.get_public(id):
         allow = True
     if not allow:
         return render_template("error.html", message="Ei kuulu omiin resepteihisi.")

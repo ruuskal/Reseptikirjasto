@@ -1,6 +1,21 @@
 from db import db
 import users
 
+def set_public(id, value):
+    sql = """UPDATE recipes 
+            SET public=:value
+            WHERE id=:id"""
+    db.session.execute(sql, {"id":id, "value":value})
+    db.session.commit()
+    return True
+    
+
+def get_public(id):
+    sql = """SELECT public FROM recipes
+            WHERE id=:id"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchone()[0]
+
 # Search recipe with partially matching name
 def search_by_name(name):
     user_id = users.user_id()
@@ -9,9 +24,7 @@ def search_by_name(name):
             WHERE r.name ILIKE :name AND 
             l.user_id=:user_id"""
     result = db.session.execute(sql, {"name":name, "user_id":user_id })
-    lista = result.fetchall()
-    print(len(lista))
-    return lista
+    return result.fetchall()
 
 def create(name, ingredients, steps):
     user_id = users.user_id()
@@ -80,11 +93,12 @@ def add_ingredients(id, ingredients):
 #     db.session.commit()
 #     return True
 
-# Return recipes' names in library
+# Return recipes' names and ids in library
 def get_own_recipes():
     user_id = users.user_id()
     sql = """SELECT r.id, r.name FROM recipes r, library l 
-            WHERE l.recipe_id=r.id AND l.user_id=:user_id""" 
+            WHERE l.recipe_id=r.id AND l.user_id=:user_id 
+            ORDER BY r.name""" 
     result = db.session.execute(sql, {"user_id": user_id})
     return result.fetchall()
 
