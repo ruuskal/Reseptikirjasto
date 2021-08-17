@@ -16,10 +16,10 @@ def delete_recipe(id):
         return render_template("error.html", message="Reseptin poistaminen epäonnistui.")
 
 @app.route("/modify_public/<int:id>", methods=["POST"])
-def modify_publicity(id):
-    status = request.form["publicity"]
+def modify_public(id):
+    status = request.form["public_status"]
     recipes.set_public(id, status)
-    return redirect("/")
+    return redirect("/profile/recipes/"+str(id))
 
 @app.route("/<int:user_id>/modify/<int:id>", methods=["GET"])
 def show_modify(user_id, id):
@@ -28,7 +28,10 @@ def show_modify(user_id, id):
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
         old_instructions = recipes.get_instructions(id)
-        public_status = recipes.get_public(id)
+        if recipes.get_public(id):
+            public_status = "julkinen"
+        else:
+            public_status = "yksityinen" 
         return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, public=public_status)
     else:
         return render_template("error.html", message="Ei ole oma reseptisi.")
@@ -100,7 +103,11 @@ def show_recipe(id):
     name = recipes.get_name(id)
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
-    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id)
+    if recipes.get_public(id):
+        public = "julkinen"
+    else:
+        public = "yksityinen"
+    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, public_status=public)
 
 @app.route("/")
 def index():

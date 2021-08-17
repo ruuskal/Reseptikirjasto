@@ -29,12 +29,12 @@
         <input type="submit" value="Vaihda ohjeet">
 </form>
 
-Reseptin julkisuusstatus on tällä hetkellä {{ public }}.
+Reseptisi on tällä hetkellä {{ public }}.
 <form action="/modify_public/{{ id }}" method="post">
-    <label for="publicity">Anna julkisuusstatus:</label>
-    <select name="publicity">
-        <option value="f">Yksityinen</option>
-        <option value="t">Julkinen</option>
+    <label for="public_status">Valitse julkisuusstatus:</label>
+    <select name="public_status">
+        <option value="False">Yksityinen</option>
+        <option value="True">Julkinen</option>
     </select>
     <input type="submit" value="Vaihda julkisuusstatus">
 </form>
