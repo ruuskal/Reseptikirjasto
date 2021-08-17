@@ -5,13 +5,13 @@
 <h2>Luo uusi resepti</h2>
 <form action="/create_recipe" method="post" id="new_recipe">
     Reseptin nimi: <br>
-    <input type="text" name="name" minlength="1" maxlength="25"></textarea>
+    <input type="text" name="name" minlength="3" maxlength="25">
     <br>
     Anna raaka-aineet omilla riveillään muodossa "raaka-aine;määrä(numeroina);yksikkö"
     <textarea name="ingredients" rows="8" cols="40" maxlength="1000">
     porkkana;0.5;kg
     bataatti tai peruna;1;kg
-    </textarea></p> 
+    </textarea>
     <br>
     Anna reseptille ohjeet. Halutessasi voit erotella eri vaiheet merkillä ";".
     <textarea name="instructions" rows="8" cols="40" maxlength="1000">

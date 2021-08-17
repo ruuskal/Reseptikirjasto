@@ -1,6 +1,18 @@
 from db import db
 import users
 
+# Search recipe with partially matching name
+def search_by_name(name):
+    user_id = users.user_id()
+    name = "%" + name + "%"
+    sql = """SELECT DISTINCT r.id, r.name FROM recipes r, library l
+            WHERE r.name ILIKE :name AND 
+            l.user_id=:user_id"""
+    result = db.session.execute(sql, {"name":name, "user_id":user_id })
+    lista = result.fetchall()
+    print(len(lista))
+    return lista
+
 def create(name, ingredients, steps):
     user_id = users.user_id()
     if user_id == 0:
@@ -41,7 +53,6 @@ def change_instructions(id, new_instructions):
     else:
         return False
 
-
 # Add ingredients to recipe
 def add_ingredients(id, ingredients):
     for rows in ingredients.split("\n"):
@@ -62,12 +73,12 @@ def add_ingredients(id, ingredients):
                 db.session.execute(sql, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":id})
     return True
             
-# Add recipe to library
-def add_to_library(user_id, recipe_id):
-    sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
-    db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
-    db.session.commit()
-    return True
+# # Add recipe to library
+# def add_to_library(user_id, recipe_id):
+#     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
+#     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+#     db.session.commit()
+#     return True
 
 # Return recipes' names in library
 def get_own_recipes():

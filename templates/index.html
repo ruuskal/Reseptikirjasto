@@ -7,6 +7,12 @@
 <br>
 <h2>Tervetuloa {{ session.user_name }}!</h2>
 <br>
+Hae resepti nimellä (vähintään 3 merkkiä):
+<form action="/search" method="post">
+    <input type="text" name="search_name" minlength="3" maxlength="25">
+    <input type="submit" value="Etsi">
+</form>
+<br>
 Omat reseptit:
 <br>
 <ul>

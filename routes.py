@@ -2,6 +2,16 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/search", methods=["POST"])
+def search_name():
+    name = request.form["search_name"]
+    result = recipes.search_by_name(name)
+    return render_template("results.html", recipes=result, search_term=name)
+
+# @app.route("/results", methods=["GET"])
+# def show_results():
+#     return render_template("results.html", recipes=)
+
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
     if recipes.delete_recipe(id):
@@ -46,7 +56,6 @@ def modify_instructions(id):
         return redirect("/profile/recipes/"+str(id))
     else:
         return render_template("error.html", message="Ei onnistunut")
-
 
 @app.route("/<int:id>/newrecipe", methods=["GET"])
 def newrecipe(id):
