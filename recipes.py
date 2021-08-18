@@ -1,6 +1,20 @@
 from db import db
 import users
 
+# Returns name of the recipes creator
+def get_creator(recipe_id):
+    sql = """SELECT u.username FROM users u, recipes r
+            WHERE r.id=:id AND u.id=r.added_by"""
+    result = db.session.execute(sql, {"id":recipe_id})
+    return result.fetchone()[0]
+
+def get_public_recipes(id):
+    sql = """SELECT r.name, r.id FROM recipes r
+            WHERE public = True AND r.added_by NOT IN (:id) 
+            ORDER BY r.name"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchall()
+
 def set_public(id, value):
     sql = """UPDATE recipes 
             SET public=:value
@@ -26,6 +40,7 @@ def search_by_name(name):
     result = db.session.execute(sql, {"name":name, "user_id":user_id })
     return result.fetchall()
 
+# Create a new recipe
 def create(name, ingredients, steps):
     user_id = users.user_id()
     if user_id == 0:
@@ -34,12 +49,12 @@ def create(name, ingredients, steps):
     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
     recipe_id = recipe.first()[0]
 
-    sql2 = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
-    db.session.execute(sql2, {"user_id":user_id, "recipe_id":recipe_id})
-
     if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
         db.session.commit() # Haittaako, että commit on vain täällä, eikä metodissa add_ingredients?
-        return recipe_id
+        if add_to_library(user_id, recipe_id):
+            return recipe_id
+        else:
+            return None
     else:
         return None
 
@@ -86,12 +101,12 @@ def add_ingredients(id, ingredients):
                 db.session.execute(sql, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":id})
     return True
             
-# # Add recipe to library
-# def add_to_library(user_id, recipe_id):
-#     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
-#     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
-#     db.session.commit()
-#     return True
+# Add recipe to library
+def add_to_library(user_id, recipe_id):
+    sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
+    db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+    db.session.commit()
+    return True
 
 # Return recipes' names and ids in library
 def get_own_recipes():

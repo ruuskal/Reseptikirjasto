@@ -103,17 +103,19 @@ def show_recipe(id):
     name = recipes.get_name(id)
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
+    added_by = recipes.get_creator(id)
     if recipes.get_public(id):
         public = "julkinen"
     else:
         public = "yksityinen"
-    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, public_status=public)
+    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, public_status=public, added_by=added_by)
 
 @app.route("/")
 def index():
     recipes_list = recipes.get_own_recipes()
     user_id = users.user_id()
-    return render_template("index.html", own_recipes=recipes_list, user_id=user_id)
+    public_recipes = recipes.get_public_recipes(user_id)
+    return render_template("index.html", own_recipes=recipes_list, user_id=user_id, public_recipes=public_recipes)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
