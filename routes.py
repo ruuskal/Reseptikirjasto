@@ -2,6 +2,12 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/search_ingredient", methods=["POST"])
+def search_ingredient():
+    ingredient = request.form["search_ingredient"]
+    result = recipes.search_by_ingredient(ingredient)
+    return render_template("results.html", recipes=result, search_term=ingredient)
+
 @app.route("/search", methods=["POST"])
 def search_name():
     name = request.form["search_name"]
@@ -92,9 +98,11 @@ def send():
 @app.route("/profile/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
     allow = False
+    is_own = False
     user_id  = users.user_id()
     if user_id == recipes.get_user_id(id):
         allow = True
+        is_own = True
     elif recipes.get_public(id):
         allow = True
     if not allow:
@@ -108,7 +116,8 @@ def show_recipe(id):
         public = "julkinen"
     else:
         public = "yksityinen"
-    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, public_status=public, added_by=added_by)
+    return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, 
+                                        public_status=public, added_by=added_by, is_own=is_own)
 
 @app.route("/")
 def index():

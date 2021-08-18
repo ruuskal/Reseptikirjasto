@@ -25,13 +25,15 @@
     <li>{{ step[0] }}</li>
     {% endfor %}
 </ol>
+
+{% if is_own: %}
 <br>
-Reseptin on lisännyt {{ added_by }}.
-<br>
-Tämä resepti on {{ public_status }}.
+Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
 <a href="/{{ user_id }}/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
 <br>
-<a href="/">Katso omat reseptit</a>
+{% else %}
+Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä. 
+{% endif %}
 
 {% endblock %}

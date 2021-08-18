@@ -1,6 +1,14 @@
 from db import db
 import users
 
+def search_by_ingredient(ingredient):
+    ingr = "%"+ingredient+"%"
+    sql = """SELECT DISTINCT r.name, r.id FROM recipes r
+            JOIN ingredients i ON i.recipe_id = r.id
+            WHERE i.ingredient ILIKE :ingredient"""
+    result = db.session.execute(sql, {"ingredient":ingr})
+    return result.fetchall()
+
 # Returns name of the recipes creator
 def get_creator(recipe_id):
     sql = """SELECT u.username FROM users u, recipes r
