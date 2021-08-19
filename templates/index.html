@@ -28,6 +28,13 @@ Omat reseptit:
 </ul>
 <a href="/{{ user_id }}/newrecipe">Luo resepti</a>
 <br><br>
+Muiden luomat reseptit omassa kirjastossa
+<ul>
+    {% for recipe in others_recipes %}
+    <ul><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }} </a></ul>
+    {% endfor %}
+</ul>
+<br><br>
 Muiden käyttäjien luomat julkiset reseptit (näitä voi katsoa, muttei muokata):
 <br>
 <ul>

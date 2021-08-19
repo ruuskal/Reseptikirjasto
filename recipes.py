@@ -1,6 +1,14 @@
 from db import db
 import users
 
+def get_others(id):
+    sql = """SELECT DISTINCT r.id, r.name FROM recipes r
+            INNER JOIN library l ON l.recipe_id=r.id
+            WHERE r.added_by NOT IN (:user_id) AND l.user_id =:user_id
+            ORDER BY r.name"""
+    result = db.session.execute(sql, {"user_id":id})
+    return result.fetchall()
+
 # Search recipe by partially matching ingredient
 def search_by_ingredient(ingredient):
     ingr = "%"+ingredient+"%"
@@ -10,7 +18,8 @@ def search_by_ingredient(ingredient):
                         (SELECT DISTINCT r.id FROM recipes r 
                         INNER JOIN ingredients i ON i.recipe_id=r.id 
                         WHERE i.ingredient ILIKE :ingredient) 
-            AND (r.public='true' OR r.added_by=:user_id)"""
+            AND (r.public='true' OR r.added_by=:user_id) 
+            ORDER BY r.name"""
     result = db.session.execute(sql, {"ingredient":ingr, "user_id":user_id})
     return result.fetchall()
 
@@ -20,7 +29,8 @@ def search_by_name(name):
     name = "%" + name + "%"
     sql = """SELECT DISTINCT id, name FROM recipes
             WHERE name ILIKE :name 
-            AND (added_by=:user_id OR public='true')"""
+            AND (added_by=:user_id OR public='true')
+            ORDER BY name"""
     result = db.session.execute(sql, {"name":name, "user_id":user_id })
     return result.fetchall()
 
@@ -121,12 +131,12 @@ def add_to_library(user_id, recipe_id):
     db.session.commit()
     return True
 
-# Return recipes' names and ids in library
+# Return list of own recipes' names and ids
 def get_own_recipes():
     user_id = users.user_id()
-    sql = """SELECT r.id, r.name FROM recipes r, library l 
-            WHERE l.recipe_id=r.id AND l.user_id=:user_id 
-            ORDER BY r.name""" 
+    sql = """SELECT id, name FROM recipes  
+            WHERE  added_by=:user_id
+            ORDER BY name""" 
     result = db.session.execute(sql, {"user_id": user_id})
     return result.fetchall()
 

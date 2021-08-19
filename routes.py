@@ -2,6 +2,15 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/add_to_library/<int:id>", methods=["POST"])
+def add_recipe(id):
+    user_id = users.user_id()
+    print(user_id)
+    if recipes.add_to_library(user_id, id):
+        return redirect("/")
+    else:
+        return render_template("error.html", message="Reseptin lisäys omaan kirjastoon epäonnistui.")
+
 @app.route("/search_ingredient", methods=["POST"])
 def search_ingredient():
     ingredient = request.form["search_ingredient"]
@@ -124,7 +133,9 @@ def index():
     recipes_list = recipes.get_own_recipes()
     user_id = users.user_id()
     public_recipes = recipes.get_public_recipes(user_id)
-    return render_template("index.html", own_recipes=recipes_list, user_id=user_id, public_recipes=public_recipes)
+    others_recipes = recipes.get_others(user_id)
+    return render_template("index.html", own_recipes=recipes_list, user_id=user_id, public_recipes=public_recipes, 
+                                        others_recipes=others_recipes)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

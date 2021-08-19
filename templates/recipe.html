@@ -34,6 +34,10 @@ Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
 {% else %}
 Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä. 
+<br>
+<form action="/add_to_library/{{ id }}", method="post">
+    <input type="submit" value="Lisää omaan kirjastoon">
+</form>
 {% endif %}
 
 {% endblock %}
