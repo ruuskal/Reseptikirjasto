@@ -115,14 +115,19 @@ def send():
 def show_recipe(id):
     allow = False
     is_own = False
+    in_library = False
     user_id  = users.user_id()
+    print(user_id)
     if user_id == recipes.get_user_id(id):
         allow = True
         is_own = True
+    elif  recipes.in_library(user_id, id):
+        allow = True
+        in_library = True
     elif recipes.get_public(id):
         allow = True
     if not allow:
-        return render_template("error.html", message="Ei kuulu omiin resepteihisi.")
+        return render_template("error.html", message="Ei katseluoikeutta.")
 
     name = recipes.get_name(id)
     ingredients = recipes.get_ingredients(id)
@@ -133,7 +138,7 @@ def show_recipe(id):
     else:
         public = "yksityinen"
     return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, 
-                                        public_status=public, added_by=added_by, is_own=is_own)
+                                        public_status=public, added_by=added_by, is_own=is_own, in_library=in_library)
 
 @app.route("/")
 def index():

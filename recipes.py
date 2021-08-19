@@ -1,6 +1,17 @@
 from db import db
 import users
 
+# Check if recipe is in library
+def in_library(user_id, recipe_id):
+    sql = """SELECT 1 FROM library 
+            WHERE user_id=:user_id AND recipe_id=:recipe_id"""
+    result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+    if result.fetchone() == None:
+        return False
+    else:
+        return True
+
+# Return recipes, that are in library and not created by current user
 def get_others(id):
     sql = """SELECT DISTINCT r.id, r.name FROM recipes r
             INNER JOIN library l ON l.recipe_id=r.id
@@ -37,7 +48,7 @@ def search_by_name(name):
 # Returns name of the recipes creator
 def get_creator(recipe_id):
     sql = """SELECT u.username FROM users u, recipes r
-            WHERE r.id=:id AND u.id=r.added_by"""
+             WHERE r.id=:id AND u.id=r.added_by"""
     result = db.session.execute(sql, {"id":recipe_id})
     return result.fetchone()[0]
 
@@ -56,7 +67,7 @@ def set_public(id, value):
     db.session.commit()
     return True
     
-
+# Return recipe's public-status
 def get_public(id):
     sql = """SELECT public FROM recipes
             WHERE id=:id"""

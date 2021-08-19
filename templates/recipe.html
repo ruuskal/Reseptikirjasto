@@ -26,7 +26,16 @@
     {% endfor %}
 </ol>
 
-{% if is_own: %}
+
+{% if in_library or is_own: %}
+Lisää muistiinpano:
+<form action="{{ user_id }}/add_note/{{ id }}", method="post">
+    <textarea name="note"rows="8" cols="40" maxlength="100">
+        Muisiintpanoja tähän
+    </textarea>
+    <input type="submit"value="Lisää muistiinpano">
+</form>
+{% elif is_own: %}
 <br>
 Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
