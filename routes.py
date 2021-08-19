@@ -2,6 +2,14 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/<int:user_id>/add_note/<int:recipe_id>", methods=["POST"])
+def add_note(user_id, recipe_id):
+    id = recipes.get_library_id(user_id, recipe_id)
+    content = request.form["note"]
+    recipes.create_note(content, id)
+    return redirect("/profile/recipes/"+str(recipe_id))
+
+
 @app.route("/<int:id>/public_recipes", methods=["GET"])
 def public_recipes(id):
     if request.method == "GET":
@@ -133,12 +141,14 @@ def show_recipe(id):
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
     added_by = recipes.get_creator(id)
+    library_id = recipes.get_library_id(user_id, id)
+    notes = recipes.get_notes(library_id)
     if recipes.get_public(id):
         public = "julkinen"
     else:
         public = "yksityinen"
     return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, 
-                                        public_status=public, added_by=added_by, is_own=is_own, in_library=in_library)
+                                        public_status=public, added_by=added_by, is_own=is_own, in_library=in_library, notes=notes)
 
 @app.route("/")
 def index():

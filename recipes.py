@@ -1,6 +1,25 @@
 from db import db
 import users
 
+def get_notes(id):
+    sql = """SELECT content FROM notes
+            WHERE library_id=:id"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchall()
+
+def create_note(content, id):
+    sql = """INSERT INTO notes (content, library_id)
+                VALUES (:content, :id)"""
+    db.session.execute(sql, {"content":content, "id":id})
+    db.session.commit()
+    return True
+
+def get_library_id(user_id, recipe_id): # TOdo:Yhdistä alempaan
+    sql = """SELECT id from library
+            WHERE user_id=:user_id AND recipe_id=:recipe_id"""
+    result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+    return result.fetchone()[0]
+
 # Check if recipe is in library
 def in_library(user_id, recipe_id):
     sql = """SELECT 1 FROM library 
