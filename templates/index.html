@@ -3,22 +3,11 @@
 
 {% if session.user_id %}
 <br>
-<a href="/logout">Kirjaudu ulos</a>
+<a href="/logout">Kirjaudu ulos</a> | <a href="/{{ user_id }}/public_recipes">Hae reseptejä</a> | <a href="/{{ user_id }}/newrecipe">Luo resepti</a>
 <br>
 <h2>Tervetuloa {{ session.user_name }}!</h2>
 <br>
-Hae resepti nimellä (vähintään 3 merkkiä):
-<form action="/search" method="post">
-    <input type="text" name="search_name" minlength="3" maxlength="25">
-    <input type="submit" value="Etsi">
-</form>
-<br>
-Hae resepti ainesosan mukaan (vähintään 3 merkkiä):
-<form action="/search_ingredient" method="post">
-    <input type="text" name="search_ingredient" minlength="3" maxlength="25">
-    <input type="submit" value="Etsi">
-</form>
-<br>
+
 Omat reseptit:
 <br>
 <ul>
@@ -26,7 +15,6 @@ Omat reseptit:
     <ul><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }} </a></ul>
     {% endfor %}
 </ul>
-<a href="/{{ user_id }}/newrecipe">Luo resepti</a>
 <br><br>
 Muiden luomat reseptit omassa kirjastossa
 <ul>
@@ -35,13 +23,7 @@ Muiden luomat reseptit omassa kirjastossa
     {% endfor %}
 </ul>
 <br><br>
-Muiden käyttäjien luomat julkiset reseptit (näitä voi katsoa, muttei muokata):
-<br>
-<ul>
-    {% for recipe in public_recipes %}
-    <ul><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }} </a></ul>
-    {% endfor %}
-</ul>
+
 
 {% else %}
 <title>Et ole kirjautunut sisään</title>
