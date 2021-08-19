@@ -7,7 +7,8 @@ CREATE TABLE users (
 CREATE TABLE recipes (
     id SERIAL PRIMARY KEY, 
     name TEXT NOT NULL,
-    added_by INTEGER REFERENCES users
+    added_by INTEGER REFERENCES users,
+    public BOOLEAN DEFAULT false
 );
 
 CREATE TABLE ingredients (
@@ -29,4 +30,10 @@ CREATE TABLE library (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users,
     recipe_id INTEGER REFERENCES recipes ON DELETE CASCADE
+);
+
+CREATE TABLE notes (
+    id SERIAL PRIMARY KEY,
+    content TEXT,
+    library_id INTEGER REFERENCES library
 );
