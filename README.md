@@ -4,10 +4,14 @@ Reseptikirjasto on harjoitussovellus, jonka toteutus on vielä vaiheessa. Täll�
 
 - luoda tunnuksen ja salasanan ja kirjautua sisään ja ulos
 - luoda reseptejä
-- katsella luomiaan reseptejä
-- poistaa luomansa reseptin
-- muuttaa luomansa reseptin nimen
+- muokata ja poistaa luomiaan reseptejä
+- asettaa luomansa reseptin julkiseksi tai yksityiseksi
+- katsella muiden luomia julkisia reseptejä tallettaa niitä omaan kirjastoonsa
+- positaa muiden reseptejä omasta kirjastosta
+- liittää muistiinpanoja kirjastossa oleviin resepteihin
+- hakea reseptejä nimen perusteella
+- hakea reseptejä ainesosan perusteella
 
-Käyttäjä ei voi nähdä muiden luomia reseptejä.
+Sovellukseen on tarkoitus vielä mahdollistaa muistiinpanojen poistaminen, luoda admin-rooli ja parantaa tietoturvaa CSRF-haavoittuvuuden osalta. 
 
-[Linkki sovellukseen.](https://reseptikirjasto.herokuapp.com/) HUOM. Kirjoitusvirheestä johtuen **reseptin nimen täytyy olla tyyppiä INTEGER**. Asia yritetään korjata ennen sunnuntain deadlinea.
+[Linkki sovellukseen.](https://reseptikirjasto.herokuapp.com/)
