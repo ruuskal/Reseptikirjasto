@@ -35,5 +35,5 @@ CREATE TABLE library (
 CREATE TABLE notes (
     id SERIAL PRIMARY KEY,
     content TEXT,
-    library_id INTEGER REFERENCES library
+    library_id INTEGER REFERENCES library ON DELETE CASCADE
 );
