@@ -71,9 +71,12 @@ def get_creator(recipe_id):
     result = db.session.execute(sql, {"id":recipe_id})
     return result.fetchone()[0]
 
+# Return list of public recipes not in own library
 def get_public_recipes(id):
-    sql = """SELECT r.name, r.id FROM recipes r
-            WHERE public = True AND r.added_by NOT IN (:id) 
+    sql = """SELECT DISTINCT r.id, r.name FROM recipes r
+            WHERE r.id NOT IN (SELECT l.recipe_id FROM library l
+                                WHERE l.user_id = (:id))
+            AND r.public='true'
             ORDER BY r.name"""
     result = db.session.execute(sql, {"id":id})
     return result.fetchall()
@@ -159,6 +162,8 @@ def add_to_library(user_id, recipe_id):
     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
     db.session.commit()
+    print(user_id)
+    print(recipe_id)
     return True
 
 # Return list of own recipes' names and ids

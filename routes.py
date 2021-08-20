@@ -15,7 +15,6 @@ def public_recipes(id):
     if request.method == "GET":
         if id == users.user_id():
             public_recipes = recipes.get_public_recipes(id)
-            print(public_recipes)
             return render_template("public_recipes.html", public_recipes=public_recipes)
 
 @app.route("/add_to_library/<int:id>", methods=["POST"])
