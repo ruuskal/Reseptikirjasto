@@ -1,6 +1,13 @@
 from db import db
 import users
 
+def delete_from_library(user_id, recipe_id):
+    sql = """DELETE FROM library
+            WHERE user_id=:user_id AND recipe_id=:recipe_id"""
+    result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+    db.session.commit()
+    return True
+
 def get_notes(id):
     sql = """SELECT content FROM notes
             WHERE library_id=:id"""
@@ -14,7 +21,7 @@ def create_note(content, id):
     db.session.commit()
     return True
 
-def get_library_id(user_id, recipe_id): # TOdo:Yhdistä alempaan
+def get_library_id(user_id, recipe_id):
     sql = """SELECT id from library
             WHERE user_id=:user_id AND recipe_id=:recipe_id"""
     result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})

@@ -2,6 +2,11 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/<int:user_id>/delete_from_library/<int:recipe_id>", methods=["POST"])
+def delete_from_library(user_id, recipe_id):
+    recipes.delete_from_library(user_id, recipe_id)
+    return redirect("/")
+
 @app.route("/<int:user_id>/add_note/<int:recipe_id>", methods=["POST"])
 def add_note(user_id, recipe_id):
     id = recipes.get_library_id(user_id, recipe_id)

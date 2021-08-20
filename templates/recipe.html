@@ -38,7 +38,7 @@ Muistiinpanot:
 Lisää muistiinpano:
 <form action="/{{ user_id }}/add_note/{{ id }}", method="post">
     <textarea name="note"rows="8" cols="40" maxlength="100">
-        Muistiintpanoja tähän
+        Muistiinpanoja tähän
     </textarea>
     <input type="submit"value="Lisää muistiinpano">
 </form>
@@ -49,7 +49,14 @@ Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
 <a href="/{{ user_id }}/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
 <br>
-{% else %}
+{% elif in_library: %}
+<br>
+Reseptin on lisännyt {{added_by  }}. Et voi muokata reseptiä.
+<form action="/{{ user_id }}/delete_from_library/{{ id }}", method="post">
+    <input type="submit" value="Poista omasta kirjastosta">
+</form>
+<br>
+{% else: %}
 Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä. 
 <br>
 <form action="/add_to_library/{{ id }}", method="post">
