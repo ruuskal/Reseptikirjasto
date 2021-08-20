@@ -7,7 +7,7 @@ def add_note(user_id, recipe_id):
     id = recipes.get_library_id(user_id, recipe_id)
     content = request.form["note"]
     recipes.create_note(content, id)
-    return redirect("/profile/recipes/"+str(recipe_id))
+    return redirect("/recipes/"+str(recipe_id))
 
 
 @app.route("/<int:id>/public_recipes", methods=["GET"])
@@ -15,12 +15,12 @@ def public_recipes(id):
     if request.method == "GET":
         if id == users.user_id():
             public_recipes = recipes.get_public_recipes(id)
+            print(public_recipes)
             return render_template("public_recipes.html", public_recipes=public_recipes)
 
 @app.route("/add_to_library/<int:id>", methods=["POST"])
 def add_recipe(id):
     user_id = users.user_id()
-    print(user_id)
     if recipes.add_to_library(user_id, id):
         return redirect("/")
     else:
@@ -49,7 +49,7 @@ def delete_recipe(id):
 def modify_public(id):
     status = request.form["public_status"]
     recipes.set_public(id, status)
-    return redirect("/profile/recipes/"+str(id))
+    return redirect("/recipes/"+str(id))
 
 @app.route("/<int:user_id>/modify/<int:id>", methods=["GET"])
 def show_modify(user_id, id):
@@ -72,7 +72,7 @@ def modify_name(id):
     if name.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla nimi.")
     elif recipes.change_name(id, name):
-        return redirect("/profile/recipes/"+str(id))
+        return redirect("/recipes/"+str(id))
     else:
         return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
 
@@ -80,7 +80,7 @@ def modify_name(id):
 def modify_ingredients(id):
     new_ingredients = request.form["ingredients"]
     if recipes.change_ingredients(id, new_ingredients):
-        return redirect("/profile/recipes/"+str(id))
+        return redirect("/recipes/"+str(id))
     else:
         return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
 
@@ -90,7 +90,7 @@ def modify_instructions(id):
     if instructions.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
     elif recipes.change_instructions(id, instructions):
-        return redirect("/profile/recipes/"+str(id))
+        return redirect("/recipes/"+str(id))
     else:
         return render_template("error.html", message="Ei onnistunut")
 
@@ -114,24 +114,29 @@ def send():
         return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
     recipe_id = recipes.create(name, ingredients_text, steps)
     if recipe_id is not None:
-        return redirect("/profile/recipes/"+str(recipe_id))
+        return redirect("/recipes/"+str(recipe_id))
     else:
         return render_template("error.html", message="Reseptin luominen epäonnistui. Tarkista raaka-aineiden kirjoitusasu.")
 
 
-@app.route("/profile/recipes/<int:id>", methods=["GET"])
+@app.route("/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
     allow = False
     is_own = False
     in_library = False
     user_id  = users.user_id()
-    print(user_id)
-    if user_id == recipes.get_user_id(id):
-        allow = True
-        is_own = True
+    library_id = None
+    notes = None
+    if user_id == recipes.get_user_id(id): 
+        allow = True 
+        is_own = True 
+        library_id = recipes.get_library_id(user_id, id)
+        notes = recipes.get_notes(library_id)
     elif  recipes.in_library(user_id, id):
-        allow = True
-        in_library = True
+        allow = True 
+        in_library = True 
+        library_id = recipes.get_library_id(user_id, id)
+        notes = recipes.get_notes(library_id)
     elif recipes.get_public(id):
         allow = True
     if not allow:
@@ -141,8 +146,7 @@ def show_recipe(id):
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
     added_by = recipes.get_creator(id)
-    library_id = recipes.get_library_id(user_id, id)
-    notes = recipes.get_notes(library_id)
+
     if recipes.get_public(id):
         public = "julkinen"
     else:

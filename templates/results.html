@@ -4,6 +4,6 @@
 <br>
 <h2>Löydetyt reseptit hakusanalla {{ search_term }}:</h2>
 {% for recipe in recipes %}
-<ul><a href="/profile/recipes/{{ recipe.id }}">{{ recipe.name }}</a></ul>
+<ul><a href="/recipes/{{ recipe.id }}">{{ recipe.name }}</a></ul>
 {% endfor %}
 {% endblock %}
