@@ -2,25 +2,29 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
-@app.route("/<int:user_id>/delete_from_library/<int:recipe_id>", methods=["POST"])
-def delete_from_library(user_id, recipe_id):
+@app.route("/delete_from_library/<int:recipe_id>", methods=["POST"])
+def delete_from_library(recipe_id):
+    user_id = users.user_id()
     recipes.delete_from_library(user_id, recipe_id)
     return redirect("/")
 
-@app.route("/<int:user_id>/add_note/<int:recipe_id>", methods=["POST"])
-def add_note(user_id, recipe_id):
+@app.route("/add_note/<int:recipe_id>", methods=["POST"])
+def add_note(recipe_id):
+    user_id = users.user_id()
     id = recipes.get_library_id(user_id, recipe_id)
     content = request.form["note"]
     recipes.create_note(content, id)
     return redirect("/recipes/"+str(recipe_id))
 
 
-@app.route("/<int:id>/public_recipes", methods=["GET"])
-def public_recipes(id):
-    if request.method == "GET":
-        if id == users.user_id():
-            public_recipes = recipes.get_public_recipes(id)
-            return render_template("public_recipes.html", public_recipes=public_recipes)
+@app.route("/public_recipes", methods=["GET"])
+def public_recipes():
+    if users.user_id() == 0:
+        return render_template("error.html", message="Et ole kirjautunut sisään.")
+    else:
+        id = users.user_id()
+        public_recipes = recipes.get_public_recipes(id)
+        return render_template("public_recipes.html", public_recipes=public_recipes)
 
 @app.route("/add_to_library/<int:id>", methods=["POST"])
 def add_recipe(id):
@@ -55,9 +59,12 @@ def modify_public(id):
     recipes.set_public(id, status)
     return redirect("/recipes/"+str(id))
 
-@app.route("/<int:user_id>/modify/<int:id>", methods=["GET"])
-def show_modify(user_id, id):
+@app.route("/modify/<int:id>", methods=["GET"])
+def show_modify(id):
+    if users.user_id() == 0:
+        return render_template("error.html", message="Kirjaudu sisään.")
     creator_id = recipes.get_user_id(id)
+    user_id = users.user_id()
     if user_id == creator_id:
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
@@ -98,12 +105,13 @@ def modify_instructions(id):
     else:
         return render_template("error.html", message="Ei onnistunut")
 
-@app.route("/<int:id>/newrecipe", methods=["GET"])
-def newrecipe(id):
-    if users.user_id() == id:
-        return render_template("newrecipe.html")
-    else:
+@app.route("/newrecipe", methods=["GET"])
+def newrecipe():
+    if users.user_id() == 0:
         return render_template("error.html", message="Kirjaudu sisään.")
+    else:
+        return render_template("newrecipe.html")
+        
 
 @app.route("/create_recipe", methods=["POST"])
 def send():
