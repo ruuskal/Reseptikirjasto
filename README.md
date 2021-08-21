@@ -12,6 +12,6 @@ Reseptikirjasto on harjoitussovellus, jonka toteutus on viel채 vaiheessa. T채ll�
 - hakea reseptej채 nimen perusteella
 - hakea reseptej채 ainesosan perusteella
 
-Sovellukseen on tarkoitus viel채 mahdollistaa muistiinpanojen poistaminen, luoda admin-rooli ja parantaa tietoturvaa CSRF-haavoittuvuuden osalta. 
+Sovellukseen on tarkoitus viel채 mahdollistaa muistiinpanojen poistaminen ja luoda admin-rooli. 
 
 [Linkki sovellukseen.](https://reseptikirjasto.herokuapp.com/)
