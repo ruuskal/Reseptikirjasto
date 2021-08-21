@@ -19,6 +19,7 @@
     Toisen vaiheen ohjeet; Kolmannen vaiheen ohjeet; jne
     </textarea>
     <input type="submit" value="Tallenna resepti">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 
 {% endblock %}

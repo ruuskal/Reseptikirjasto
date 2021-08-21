@@ -7,6 +7,7 @@
     <label for="name">Anna uusi nimi:</label>
     <input type="text" name="name">
     <input type="submit" value="Vaihda nimi">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 
@@ -17,6 +18,7 @@
         {% endfor %}
     </textarea>
     <input type="submit" value="Vaihda raaka-aineet">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 
@@ -27,6 +29,7 @@
        {% endfor %}
     </textarea>
         <input type="submit" value="Vaihda ohjeet">
+        <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 
 Reseptisi on tällä hetkellä {{ public }}.
@@ -37,10 +40,12 @@ Reseptisi on tällä hetkellä {{ public }}.
         <option value="True">Julkinen</option>
     </select>
     <input type="submit" value="Vaihda julkisuusstatus">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 
 <form action="/delete_recipe/{{ id }}" method="post">
     <input type="submit" value="Poista resepti">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 
 

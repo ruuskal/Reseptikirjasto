@@ -4,12 +4,14 @@ import users, recipes
 
 @app.route("/delete_from_library/<int:recipe_id>", methods=["POST"])
 def delete_from_library(recipe_id):
+    users.check_csrf()
     user_id = users.user_id()
     recipes.delete_from_library(user_id, recipe_id)
     return redirect("/")
 
 @app.route("/add_note/<int:recipe_id>", methods=["POST"])
 def add_note(recipe_id):
+    users.check_csrf()
     user_id = users.user_id()
     id = recipes.get_library_id(user_id, recipe_id)
     content = request.form["note"]
@@ -28,6 +30,7 @@ def public_recipes():
 
 @app.route("/add_to_library/<int:id>", methods=["POST"])
 def add_recipe(id):
+    users.check_csrf()
     user_id = users.user_id()
     if recipes.add_to_library(user_id, id):
         return redirect("/")
@@ -36,18 +39,21 @@ def add_recipe(id):
 
 @app.route("/search_ingredient", methods=["POST"])
 def search_ingredient():
+    users.check_csrf()
     ingredient = request.form["search_ingredient"]
     result = recipes.search_by_ingredient(ingredient)
     return render_template("results.html", recipes=result, search_term=ingredient)
 
 @app.route("/search", methods=["POST"])
 def search_name():
+    users.check_csrf()
     name = request.form["search_name"]
     result = recipes.search_by_name(name)
     return render_template("results.html", recipes=result, search_term=name)
 
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
+    users.check_csrf()
     if recipes.delete_recipe(id):
         return redirect("/")
     else:
@@ -55,6 +61,7 @@ def delete_recipe(id):
 
 @app.route("/modify_public/<int:id>", methods=["POST"])
 def modify_public(id):
+    users.check_csrf()
     status = request.form["public_status"]
     recipes.set_public(id, status)
     return redirect("/recipes/"+str(id))
@@ -79,6 +86,7 @@ def show_modify(id):
 
 @app.route("/modify_name/<int:id>", methods=["POST"])
 def modify_name(id):
+    users.check_csrf()
     name = request.form["name"]
     if name.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla nimi.")
@@ -89,6 +97,7 @@ def modify_name(id):
 
 @app.route("/modify_ingredients/<int:id>", methods=["POST"])
 def modify_ingredients(id):
+    users.check_csrf()
     new_ingredients = request.form["ingredients"]
     if recipes.change_ingredients(id, new_ingredients):
         return redirect("/recipes/"+str(id))
@@ -97,6 +106,7 @@ def modify_ingredients(id):
 
 @app.route("/modify_instructions/<int:id>", methods=["POST"])
 def modify_instructions(id):
+    users.check_csrf()
     instructions = request.form["instructions"]
     if instructions.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
@@ -115,6 +125,7 @@ def newrecipe():
 
 @app.route("/create_recipe", methods=["POST"])
 def send():
+    users.check_csrf()
     name = request.form["name"]
     if name.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla nimi.")
@@ -133,6 +144,9 @@ def send():
 
 @app.route("/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
+    if users.user_id() == 0:
+        return render_template("error.html", message="Kirjaudu sisään.")
+    
     allow = False
     is_own = False
     in_library = False

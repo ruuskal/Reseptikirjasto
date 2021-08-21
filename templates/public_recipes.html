@@ -9,12 +9,14 @@ Hae resepti nimellä (vähintään 3 merkkiä):
 <form action="/search" method="post">
     <input type="text" name="search_name" minlength="3" maxlength="25">
     <input type="submit" value="Etsi">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 Hae resepti ainesosan mukaan (vähintään 3 merkkiä):
 <form action="/search_ingredient" method="post">
     <input type="text" name="search_ingredient" minlength="3" maxlength="25">
     <input type="submit" value="Etsi">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 Muiden käyttäjien luomat julkiset reseptit:

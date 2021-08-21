@@ -36,24 +36,26 @@ Muistiinpanot:
 {% endfor %}
 <br>
 Lisää muistiinpano:
-<form action="/{{ user_id }}/add_note/{{ id }}", method="post">
+<form action="/add_note/{{ id }}", method="post">
     <textarea name="note"rows="8" cols="40" maxlength="100">
         Muistiinpanoja tähän
     </textarea>
     <input type="submit"value="Lisää muistiinpano">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 {% endif %}
 {% if is_own: %}
 <br>
 Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
-<a href="/{{ user_id }}/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
+<a href="/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
 <br>
 {% elif in_library: %}
 <br>
 Reseptin on lisännyt {{added_by  }}. Et voi muokata reseptiä.
-<form action="/{{ user_id }}/delete_from_library/{{ id }}", method="post">
+<form action="/delete_from_library/{{ id }}", method="post">
     <input type="submit" value="Poista omasta kirjastosta">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 {% else: %}
@@ -61,6 +63,7 @@ Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä.
 <br>
 <form action="/add_to_library/{{ id }}", method="post">
     <input type="submit" value="Lisää omaan kirjastoon">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 {% endif %}
 
