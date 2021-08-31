@@ -2,7 +2,8 @@
 {% block content %}
 <a href="/">Etusivulle</a>
 <br>
-<h2>{{ name }}</h2>
+<h2>{{ name }}</h2> Tähdet: {{ stars }} / 5.
+<br>
 <br>
 <table>
     <tr>
@@ -25,9 +26,11 @@
     <li>{{ step[0] }}</li>
     {% endfor %}
 </ol>
+<br>
 
 
 {% if in_library or is_own: %}
+
 Muistiinpanot:
 {% for n in notes %}
 <ul>
@@ -43,6 +46,16 @@ Lisää muistiinpano:
     <input type="submit"value="Lisää muistiinpano">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
+
+<br>
+Arvostele resepti asteikolla 1-5:
+<br>
+<form action="/stars/{{ id }}", method="post">
+    <input type="number" name="stars" min="1" max="5">
+    <input type="submit" value="Anna arvio">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+</form>
+<br>
 {% endif %}
 {% if is_own: %}
 <br>

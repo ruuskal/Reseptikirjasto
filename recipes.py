@@ -1,6 +1,25 @@
 from db import db
 import users
 
+def give_stars(recipe_id, stars, user_id):
+    sql = """UPDATE library 
+            SET stars=:stars
+            WHERE recipe_id=:recipe_id AND user_id=:user_id"""
+    db.session.execute(sql, {"stars":stars, "user_id":user_id, "recipe_id":recipe_id})
+    sql2 = """UPDATE recipes 
+            SET stars=(SELECT ROUND(AVG(stars), 1) FROM library
+                WHERE recipe_id=:recipe_id)
+            WHERE id=:recipe_id"""
+    db.session.execute(sql2, {"recipe_id":recipe_id})
+    db.session.commit()
+    return True
+
+def get_stars(id):
+    sql = """SELECT stars FROM recipes 
+            WHERE id=:id"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchone()[0]
+
 def delete_from_library(user_id, recipe_id):
     sql = """DELETE FROM library
             WHERE user_id=:user_id AND recipe_id=:recipe_id"""
@@ -113,7 +132,7 @@ def create(name, ingredients, steps):
     recipe_id = recipe.first()[0]
 
     if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
-        db.session.commit() # Haittaako, että commit on vain täällä, eikä metodissa add_ingredients?
+        db.session.commit() 
         if add_to_library(user_id, recipe_id):
             return recipe_id
         else:

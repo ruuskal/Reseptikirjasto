@@ -2,6 +2,19 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/stars/<int:id>", methods=["POST"])
+def rate(id):
+    users.check_csrf()
+    try: 
+        stars = int(request.form["stars"])
+    except ValueError:
+        return render_template("error.html", message="Arvion on oltava kokonaisluku väliltä 1-5")
+    if 1 < stars > 5:
+        return render_template("error.html", message="Arvion on oltava kokonaisluku väliltä 1-5")
+    user_id=users.user_id()
+    recipes.give_stars(id, stars, user_id)
+    return redirect("/recipes/"+str(id))
+
 @app.route("/delete_from_library/<int:recipe_id>", methods=["POST"])
 def delete_from_library(recipe_id):
     users.check_csrf()
@@ -172,13 +185,15 @@ def show_recipe(id):
     ingredients = recipes.get_ingredients(id)
     instructions = recipes.get_instructions(id)
     added_by = recipes.get_creator(id)
+    stars = recipes.get_stars(id)
 
     if recipes.get_public(id):
         public = "julkinen"
     else:
         public = "yksityinen"
     return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, 
-                                        public_status=public, added_by=added_by, is_own=is_own, in_library=in_library, notes=notes)
+                                        public_status=public, added_by=added_by, is_own=is_own, in_library=in_library, notes=notes,
+                                        stars=stars)
 
 @app.route("/")
 def index():
