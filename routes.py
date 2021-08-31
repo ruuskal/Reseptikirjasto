@@ -2,6 +2,14 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+@app.route("/delete_note/<int:id>", methods=["POST"])
+def delete_note(id):
+    users.check_csrf()
+    if "note_id" in request.form:
+        note_id = request.form["note_id"]
+        recipes.delete_note(note_id)
+    return redirect("/recipes/"+str(id))
+
 @app.route("/stars/<int:id>", methods=["POST"])
 def rate(id):
     users.check_csrf()

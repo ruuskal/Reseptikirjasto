@@ -1,6 +1,13 @@
 from db import db
 import users
 
+def delete_note(id):
+    sql = """DELETE FROM notes
+            WHERE id=:id"""
+    result = db.session.execute(sql, {"id":id})
+    db.session.commit()
+    return True
+
 def get_visible_amount(id):
     sql = """SELECT COUNT (DISTINCT id) FROM recipes
             WHERE added_by=:id OR public='true'"""
@@ -41,7 +48,7 @@ def delete_from_library(user_id, recipe_id):
     return True
 
 def get_notes(id):
-    sql = """SELECT content FROM notes
+    sql = """SELECT content, id FROM notes
             WHERE library_id=:id"""
     result = db.session.execute(sql, {"id":id})
     return result.fetchall()
@@ -201,8 +208,6 @@ def add_to_library(user_id, recipe_id):
     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
     db.session.commit()
-    print(user_id)
-    print(recipe_id)
     return True
 
 # Return list of own recipes' names and ids

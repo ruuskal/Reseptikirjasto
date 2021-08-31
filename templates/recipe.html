@@ -31,22 +31,28 @@
 
 {% if in_library or is_own: %}
 
-Muistiinpanot:
-{% for n in notes %}
-<ul>
-    <li>{{ n.content }}</li>
-</ul>
-{% endfor %}
+<h3>Muistiinpanot:</h3>
+<form action="/delete_note/{{ id }}", method="post">
+<ol>
+    {% for n in notes %}
+    <li>{{ n.content }} 
+        <input type="radio" name="note_id" value="{{ n.id }}"><br>
+    </li>
+    {% endfor %}
+</ol>
+<input type="hidden" name="csrf" value="{{ session.csrf }}">
+<input type="submit" value="Poista valittu muistiinpano">
+</form>
+
 <br>
 Lisää muistiinpano:
 <form action="/add_note/{{ id }}", method="post">
-    <textarea name="note"rows="8" cols="40" maxlength="100">
+    <textarea name="note"rows="6" cols="30" maxlength="500">
         Muistiinpanoja tähän
     </textarea>
-    <input type="submit"value="Lisää muistiinpano">
+    <input type="submit" value="Lisää muistiinpano">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
-
 <br>
 Arvostele resepti asteikolla 1-5:
 <br>
