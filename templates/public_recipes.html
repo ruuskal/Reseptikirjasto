@@ -4,7 +4,8 @@
 <br>
 <a href="/logout">Kirjaudu ulos</a> | <a href="/">Etusivulle</a>
 <br>
-
+<h2>Kirjastossa on {{ recipes_amount }} reseptiä, jotka eivät vielä ole kirjastossasi!</h2>
+<br>
 Hae resepti nimellä (vähintään 3 merkkiä):
 <form action="/search" method="post">
     <input type="text" name="search_name" minlength="3" maxlength="25">

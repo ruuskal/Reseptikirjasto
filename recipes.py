@@ -1,6 +1,14 @@
 from db import db
 import users
 
+def get_recipes_amount(id):
+    sql = """SELECT COUNT (DISTINCT r.id) FROM recipes r
+            WHERE r.id NOT IN (SELECT l.recipe_id FROM library l
+                                WHERE l.user_id = (:id))
+            AND r.public='true'"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchone()[0]
+
 def give_stars(recipe_id, stars, user_id):
     sql = """UPDATE library 
             SET stars=:stars

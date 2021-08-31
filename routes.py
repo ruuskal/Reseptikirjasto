@@ -38,8 +38,9 @@ def public_recipes():
         return render_template("error.html", message="Et ole kirjautunut sisään.")
     else:
         id = users.user_id()
+        recipes_amount = recipes.get_recipes_amount(id)
         public_recipes = recipes.get_public_recipes(id)
-        return render_template("public_recipes.html", public_recipes=public_recipes)
+        return render_template("public_recipes.html", recipes_amount=recipes_amount, public_recipes=public_recipes)
 
 @app.route("/add_to_library/<int:id>", methods=["POST"])
 def add_recipe(id):
