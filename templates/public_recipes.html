@@ -3,9 +3,8 @@
 
 <br>
 <a href="/logout">Kirjaudu ulos</a> | <a href="/">Etusivulle</a>
-<br>
-<h2>Kirjastossa on {{ recipes_amount }} reseptiä, jotka eivät vielä ole kirjastossasi!</h2>
-<br>
+<h2>Etsi resepti {{ visible_amount }} reseptin joukosta!</h2>
+
 Hae resepti nimellä (vähintään 3 merkkiä):
 <form action="/search" method="post">
     <input type="text" name="search_name" minlength="3" maxlength="25">
@@ -19,9 +18,18 @@ Hae resepti ainesosan mukaan (vähintään 3 merkkiä):
     <input type="submit" value="Etsi">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
+<br><br>
 <br>
-Muiden käyttäjien luomat julkiset reseptit:
+Parhaaksi arvioidut reseptit:
+<ul>
+    {% for b in best %}
+    <ul><a href="/recipes/{{ b.id }}">{{ b.name }} </a>  {{ b.stars }} / 5</ul>
+    {% endfor %}
+</ul>
+
+
 <br>
+Reseptit, jotka eivät vielä ole kirjastossasi:
 <ul>
     {% for recipe in public_recipes %}
     <ul><a href="/recipes/{{ recipe.id }}">{{ recipe.name }} </a></ul>

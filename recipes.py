@@ -1,13 +1,18 @@
 from db import db
 import users
 
-def get_recipes_amount(id):
-    sql = """SELECT COUNT (DISTINCT r.id) FROM recipes r
-            WHERE r.id NOT IN (SELECT l.recipe_id FROM library l
-                                WHERE l.user_id = (:id))
-            AND r.public='true'"""
+def get_visible_amount(id):
+    sql = """SELECT COUNT (DISTINCT id) FROM recipes
+            WHERE added_by=:id OR public='true'"""
     result = db.session.execute(sql, {"id":id})
     return result.fetchone()[0]
+
+def get_best(id):
+    sql = """SELECT id, name, stars FROM recipes
+                WHERE (added_by=:id OR public='true') 
+                AND stars = (SELECT MAX (stars) FROM recipes)"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchall()
 
 def give_stars(recipe_id, stars, user_id):
     sql = """UPDATE library 
