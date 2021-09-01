@@ -2,6 +2,43 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
+
+@app.route("/make_recipe", methods=["GET", "POST"])
+def letstry():
+    if request.method == "GET":
+        return render_template("create_recipe.html")
+    if request.method == "POST":
+        users.check_csrf()
+        lines = int(request.form["lines"])
+        ingredients = []
+        row = 0
+        while row <= lines:
+           
+            i = "ingredient"+str(row)
+            u = "unit"+str(row)
+            a = "amount"+str(row)
+
+            ingredient = request.form[i]
+            if ingredient.strip() == "":
+                return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
+                                                                " nimeä raaka-aine")
+            try:
+                amount = float(request.form[a])
+            except ValueError:
+                return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
+
+            unit = request.form[u]
+            new_row = [ingredient, amount, unit]
+            ingredients.append(new_row)
+            row += 1
+
+        name = request.form["name"]
+        inst = request.form["instructions"]
+        recipe_id = recipes.create(name, ingredients, inst)
+        
+        return redirect("/recipes/"+str(recipe_id))
+        
+
 @app.route("/delete_note/<int:id>", methods=["POST"])
 def delete_note(id):
     users.check_csrf()

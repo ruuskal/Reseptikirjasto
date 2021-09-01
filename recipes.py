@@ -142,6 +142,33 @@ def get_public(id):
     result = db.session.execute(sql, {"id":id})
     return result.fetchone()[0]
 
+# def make_recipe(name):
+#     user_id = users.user_id()
+#             return None
+#     sql = "INSERT INTO recipes (name, added_by) VALUES (:name, :user_id) RETURNING id"
+#     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
+#     recipe_id = recipe.first()[0]
+
+
+
+# Create a new recipe
+# def create(name, ingredients, steps):
+#     user_id = users.user_id()
+#     if user_id == 0:
+#         return None
+#     sql = "INSERT INTO recipes (name, added_by) VALUES (:name, :user_id) RETURNING id"
+#     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
+#     recipe_id = recipe.first()[0]
+
+#     if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
+#         db.session.commit() 
+#         if add_to_library(user_id, recipe_id):
+#             return recipe_id
+#         else:
+#             return None
+#     else:
+#         return None
+
 # Create a new recipe
 def create(name, ingredients, steps):
     user_id = users.user_id()
@@ -151,7 +178,7 @@ def create(name, ingredients, steps):
     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
     recipe_id = recipe.first()[0]
 
-    if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
+    if make_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
         db.session.commit() 
         if add_to_library(user_id, recipe_id):
             return recipe_id
@@ -159,6 +186,13 @@ def create(name, ingredients, steps):
             return None
     else:
         return None
+
+def make_ingredients(id, ingredients):
+    for line in ingredients:
+        sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
+            VALUES (:ingredient, :amount, :unit, :recipe_id)"""
+        db.session.execute(sql, {"ingredient":line[0], "amount":line[1], "unit":line[2], "recipe_id":id})
+    return True
 
 # Add instructions to recipe
 def add_instructions(id, steps):
