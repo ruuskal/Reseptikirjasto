@@ -4,14 +4,64 @@
 <br>
 <h2>{{ name }}</h2>
 <form action="/modify_name/{{ id }}" method="post">
-    <label for="name">Anna uusi nimi:</label>
-    <input type="text" name="name">
+    <input type="text" name="name" placeholder="Uusi nimi" required>
     <input type="submit" value="Vaihda nimi">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 
-<form action="/modify_ingredients/{{ id }}" method="post">
+
+
+<form action="/delete_ingredient/{{ id }}" method="post">
+    <table>
+        <thead>
+        <tr>
+            <th><label for="ingredient">Raaka-aine</label></th>
+            <th><label for="amount">Määrä </label></th>
+            <th><label for="unit">Yksikkö</label></th>
+        </tr>
+    </thead>
+    <tbody id="ingr_table">
+        {% for i in old_ingredients %}
+    <tr>
+        <td>{{ i[0] }}</td>
+        <td>{{ i[1] }}</td>
+        <td>{{ i[2] }}</td>
+        <td><input type="radio" name="ingr_id" value="{{ i[3] }}" required></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+
+    <input type="submit" value="Poista valittu rivi.">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+</form>
+<br>
+
+
+
+<form action="/add_ingredient/{{ id }}" method="post">
+    <tr>
+        <td><input type="text" name="ingredient" placeholder="10% kermaa" minlength="3" maxlength="30" required></td>
+        <td><input type="number"  name="amount" placeholder="0.5" min="0" step="1" required></td>
+        <td><input type="text" name="unit" placeholder="dl" minlength="1" maxlength="30" required></td>
+    </tr>
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+    <input type="submit" value="Lisää rivi.">
+</form>
+<br>
+
+<!-- <form action="/modify_instructions/{{ id }}" method="post">
+    <textarea name="instructions" rows="8" cols="40" maxlength="1000">
+       {% for i in old_instructions %}
+       {{ i[0] }};
+       {% endfor %}
+    </textarea>
+        <input type="submit" value="Vaihda ohjeet">
+        <input type="hidden" name="csrf" value="{{ session.csrf }}">
+</form> -->
+
+<!-- <form action="/modify_ingredients/{{ id }}" method="post">
     <textarea name="ingredients" rows="8" cols="40" maxlength="1000">
         {% for i in old_ingredients %}
         {{ i[0] }};{{ i[1] }};{{ i[2] }}
@@ -21,9 +71,11 @@
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
-
+ -->
+ <br>
+<b>Anna uudet ohjeet.</b>Voit halutessasi jakaa ohjeet eri vaiheisiin merkillä ;
 <form action="/modify_instructions/{{ id }}" method="post">
-    <textarea name="instructions" rows="8" cols="40" maxlength="1000">
+    <textarea name="instructions" rows="8" cols="40" maxlength="1000" required>
        {% for i in old_instructions %}
        {{ i[0] }};
        {% endfor %}
@@ -31,7 +83,7 @@
         <input type="submit" value="Vaihda ohjeet">
         <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
-
+<br><br>
 Reseptisi on tällä hetkellä {{ public }}.
 <form action="/modify_public/{{ id }}" method="post">
     <label for="public_status">Valitse julkisuusstatus:</label>
@@ -42,7 +94,7 @@ Reseptisi on tällä hetkellä {{ public }}.
     <input type="submit" value="Vaihda julkisuusstatus">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
-
+<br><br>
 <form action="/delete_recipe/{{ id }}" method="post">
     <input type="submit" value="Poista resepti">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">

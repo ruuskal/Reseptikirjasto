@@ -178,7 +178,13 @@ def create(name, ingredients, steps):
     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
     recipe_id = recipe.first()[0]
 
-    if make_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
+    for line in ingredients:
+        sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
+            VALUES (:ingredient, :amount, :unit, :recipe_id)"""
+        db.session.execute(sql, {"ingredient":line[0], "amount":line[1], "unit":line[2], "recipe_id":id})
+    
+
+    if add_instructions(recipe_id, steps):
         db.session.commit() 
         if add_to_library(user_id, recipe_id):
             return recipe_id
@@ -187,12 +193,13 @@ def create(name, ingredients, steps):
     else:
         return None
 
-def make_ingredients(id, ingredients):
-    for line in ingredients:
-        sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
+def make_ingredients(id, ingredient):
+    sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
             VALUES (:ingredient, :amount, :unit, :recipe_id)"""
-        db.session.execute(sql, {"ingredient":line[0], "amount":line[1], "unit":line[2], "recipe_id":id})
+    db.session.execute(sql, {"ingredient":ingredient[0], "amount":ingredient[1], "unit":ingredient[2], "recipe_id":id})
+    db.session.commit()
     return True
+
 
 # Add instructions to recipe
 def add_instructions(id, steps):
@@ -235,12 +242,20 @@ def add_ingredients(id, ingredients):
                 sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
                     VALUES (:ingredient, :amount, :unit, :recipe_id)"""
                 db.session.execute(sql, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":id})
+    print("lisätty")
     return True
             
 # Add recipe to library
 def add_to_library(user_id, recipe_id):
     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
+    db.session.commit()
+    return True
+
+def delete_ingredient(id):
+    sql = """DELETE FROM ingredients
+            WHERE id=:id"""
+    db.session.execute(sql, {"id": id})
     db.session.commit()
     return True
 
@@ -261,7 +276,7 @@ def get_name(id):
 
 # Return list of ingredients
 def get_ingredients(recipe_id):
-    sql = """SELECT ingredient, amount, unit FROM ingredients 
+    sql = """SELECT ingredient, amount, unit, id FROM ingredients 
             WHERE recipe_id=:id"""
     result = db.session.execute(sql, {"id": recipe_id})
     return result.fetchall()

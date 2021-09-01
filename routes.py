@@ -34,7 +34,7 @@ def create_recipe():
             if ingredient.strip() == "":
                 return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
                                                                 " nimeä raaka-aine")
-            if len(ingredient) < 3 or len(ingredients) > 50:
+            if len(ingredient) < 3 or len(ingredient) > 50:
                 return render_template("error.html", message="Raaka-aineen tulee käyttää 3-50 merkkiä.")
             try:
                 amount = float(request.form[a])
@@ -159,7 +159,8 @@ def show_modify(id):
             public_status = "julkinen"
         else:
             public_status = "yksityinen" 
-        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, public=public_status)
+        return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, 
+                                            public=public_status, )
     else:
         return render_template("error.html", message="Ei ole oma reseptisi.")
 
@@ -174,14 +175,52 @@ def modify_name(id):
     else:
         return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
 
-@app.route("/modify_ingredients/<int:id>", methods=["POST"])
-def modify_ingredients(id):
+# @app.route("/modify_ingredients/<int:id>", methods=["POST"])
+# def modify_ingredients(id):
+#     users.check_csrf()
+#     new_ingredients = request.form["ingredients"]
+#     if recipes.change_ingredients(id, new_ingredients):
+#         return redirect("/recipes/"+str(id))
+#     else:
+#         return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
+
+@app.route("/add_ingredient/<int:id>", methods=["POST"])
+def new_ingredient(id):
     users.check_csrf()
-    new_ingredients = request.form["ingredients"]
-    if recipes.change_ingredients(id, new_ingredients):
-        return redirect("/recipes/"+str(id))
+    ingredient = request.form["ingredient"]
+    if ingredient.strip() == "":
+        return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
+                                                                " nimeä raaka-aine")
+    if len(ingredient) < 3 or len(ingredient) > 50:
+        return render_template("error.html", message="Raaka-aineen tulee käyttää 3-50 merkkiä.")
+    try:
+        float(request.form["amount"])
+    except ValueError:
+        return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
+
+    amount = request.form["amount"]
+    unit = request.form["unit"]
+    if len(unit) > 50:
+        return render_template("error.html", message="Yksikön tulee käyttää 1-50 merkkiä.")
+    new_row = [ingredient, amount, unit]
+    if recipes.make_ingredients(id, new_row):
+        return redirect("/modify/"+str(id))
     else:
-        return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
+        return render_template("error.html", message="Ei onnistunut.")
+
+
+@app.route("/delete_ingredient/<int:id>", methods=["POST"])
+def delete_ingredient(id):
+    users.check_csrf()
+    if "ingr_id" in request.form:
+        ingr_id = request.form["ingr_id"]
+    else:
+        return render_template("error.html", message="Valitse rivi poistettavaksi.")
+    if recipes.delete_ingredient(ingr_id):
+        return redirect("/modify/"+str(id))
+    else:
+        return render_template("error.html", message="Ei onnistunut.")
+
 
 @app.route("/modify_instructions/<int:id>", methods=["POST"])
 def modify_instructions(id):
