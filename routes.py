@@ -4,12 +4,24 @@ import users, recipes
 
 
 @app.route("/make_recipe", methods=["GET", "POST"])
-def letstry():
+def create_recipe():
+
     if request.method == "GET":
-        return render_template("create_recipe.html")
+        if users.user_id() == 0:
+            return render_template("error.html", message="Kirjaudu sisään.")
+        else:
+            return render_template("create_recipe.html")
+
     if request.method == "POST":
+
         users.check_csrf()
+        name = request.form["name"]
+        if  3 > len(name) or len(name) > 50:
+            return render_template("error.html", message="Nimen tulee olla 3-30 merkkiä pitkä.")
+
         lines = int(request.form["lines"])
+        if lines == -1 or lines >50:
+            return render_template("error.html", message="Reseptillä pitää olla 1-50 riviä aineksia.")
         ingredients = []
         row = 0
         while row <= lines:
@@ -22,18 +34,24 @@ def letstry():
             if ingredient.strip() == "":
                 return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
                                                                 " nimeä raaka-aine")
+            if len(ingredient) < 3 or len(ingredients) > 50:
+                return render_template("error.html", message="Raaka-aineen tulee käyttää 3-50 merkkiä.")
             try:
                 amount = float(request.form[a])
             except ValueError:
                 return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
 
             unit = request.form[u]
+            if len(unit) > 50:
+                return render_template("error.html", message="Yksikön tulee käyttää 1-50 merkkiä.")
             new_row = [ingredient, amount, unit]
             ingredients.append(new_row)
             row += 1
 
-        name = request.form["name"]
+        
         inst = request.form["instructions"]
+        if len(inst) < 1 or len(inst) > 5000:
+            return render_template("error.html", message="Ohjeiden tulee käyttää 1-5000 merkkiä.")
         recipe_id = recipes.create(name, ingredients, inst)
         
         return redirect("/recipes/"+str(recipe_id))
