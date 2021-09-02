@@ -42,7 +42,7 @@ def create_recipe():
                 return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
 
             unit = request.form[u]
-            if if len(unit) < 1 or len(unit) > 50:
+            if len(unit) < 1 or len(unit) > 50:
                 return render_template("error.html", message="Yksikön tulee käyttää 1-50 merkkiä.")
             new_row = [ingredient, amount, unit]
             ingredients.append(new_row)

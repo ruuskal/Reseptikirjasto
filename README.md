@@ -8,10 +8,10 @@ Reseptikirjasto on harjoitussovellus, jonka toteutus on vielä vaiheessa. Täll�
 - asettaa luomansa reseptin julkiseksi tai yksityiseksi
 - katsella muiden luomia julkisia reseptejä tallettaa niitä omaan kirjastoonsa
 - positaa muiden reseptejä omasta kirjastosta
-- liittää muistiinpanoja kirjastossa oleviin resepteihin
+- liittää ja poistaa muistiinpanoja kirjastossa oleviin resepteihin
+- arvostella kirjastossa olevia reseptejä
 - hakea reseptejä nimen perusteella
 - hakea reseptejä ainesosan perusteella
-
-Sovellukseen on tarkoitus vielä mahdollistaa muistiinpanojen poistaminen ja luoda admin-rooli. 
+- nähdä parhaaksi arvioidut reseptit
 
 [Linkki sovellukseen.](https://reseptikirjasto.herokuapp.com/)

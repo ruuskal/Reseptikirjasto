@@ -8,7 +8,8 @@ CREATE TABLE recipes (
     id SERIAL PRIMARY KEY, 
     name TEXT NOT NULL,
     added_by INTEGER REFERENCES users,
-    public BOOLEAN DEFAULT false
+    public BOOLEAN DEFAULT false,
+    stars NUMERIC DEFAULT 0
 );
 
 CREATE TABLE ingredients (
@@ -29,7 +30,8 @@ CREATE TABLE instructions (
 CREATE TABLE library (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users,
-    recipe_id INTEGER REFERENCES recipes ON DELETE CASCADE
+    recipe_id INTEGER REFERENCES recipes ON DELETE CASCADE,
+    stars INTEGER DEFAULT 0
 );
 
 CREATE TABLE notes (
