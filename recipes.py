@@ -181,8 +181,7 @@ def create(name, ingredients, steps):
     for line in ingredients:
         sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
             VALUES (:ingredient, :amount, :unit, :recipe_id)"""
-        db.session.execute(sql, {"ingredient":line[0], "amount":line[1], "unit":line[2], "recipe_id":id})
-    
+        db.session.execute(sql, {"ingredient":line[0], "amount":line[1], "unit":line[2], "recipe_id":recipe_id})
 
     if add_instructions(recipe_id, steps):
         db.session.commit() 
