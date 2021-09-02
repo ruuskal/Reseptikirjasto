@@ -88,9 +88,16 @@ def delete_from_library(recipe_id):
 @app.route("/add_note/<int:recipe_id>", methods=["POST"])
 def add_note(recipe_id):
     users.check_csrf()
+    content = request.form["note"]
+    if content.strip() == "":
+        return render_template("error.html", message="Muistiinpano ei voi olla tyhjä.")
+    
+    if len(content) > 1000:
+        return render_template("error.html", message="Muistiinpano ei saa olla yli 1000 merkkiä.")
+
     user_id = users.user_id()
     id = recipes.get_library_id(user_id, recipe_id)
-    content = request.form["note"]
+    
     recipes.create_note(content, id)
     return redirect("/recipes/"+str(recipe_id))
 
@@ -113,8 +120,6 @@ def add_recipe(id):
     user_id = users.user_id()
     if recipes.add_to_library(user_id, id):
         return redirect("/")
-    else:
-        return render_template("error.html", message="Reseptin lisäys omaan kirjastoon epäonnistui.")
 
 @app.route("/search_ingredient", methods=["POST"])
 def search_ingredient():
@@ -133,24 +138,22 @@ def search_name():
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
     users.check_csrf()
-    if recipes.delete_recipe(id):
-        return redirect("/")
-    else:
-        return render_template("error.html", message="Reseptin poistaminen epäonnistui.")
+    recipes.delete_recipe(id)
+    return redirect("/")
 
 @app.route("/modify_public/<int:id>", methods=["POST"])
 def modify_public(id):
     users.check_csrf()
     status = request.form["public_status"]
     recipes.set_public(id, status)
-    return redirect("/recipes/"+str(id))
+    return redirect("/modify/"+str(id))
 
 @app.route("/modify/<int:id>", methods=["GET"])
 def show_modify(id):
-    if users.user_id() == 0:
+    user_id = users.user_id()
+    if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään.")
     creator_id = recipes.get_user_id(id)
-    user_id = users.user_id()
     if user_id == creator_id:
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
@@ -160,9 +163,9 @@ def show_modify(id):
         else:
             public_status = "yksityinen" 
         return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, 
-                                            public=public_status, )
+                                            public=public_status)
     else:
-        return render_template("error.html", message="Ei ole oma reseptisi.")
+        return render_template("error.html", message="Ei ole oma reseptisi, et voi muokata sitä.")
 
 @app.route("/modify_name/<int:id>", methods=["POST"])
 def modify_name(id):
@@ -170,10 +173,10 @@ def modify_name(id):
     name = request.form["name"]
     if name.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla nimi.")
-    elif recipes.change_name(id, name):
-        return redirect("/recipes/"+str(id))
-    else:
-        return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
+    elif len(name) < 3 or len(name) > 50:
+            return render_template("error.html", message="Nimen tulee olla 3-50 merkkiä pitkä.")
+    if recipes.change_name(id, name):
+        return redirect("/modify/"+str(id))
 
 
 @app.route("/add_ingredient/<int:id>", methods=["POST"])
@@ -197,8 +200,6 @@ def new_ingredient(id):
     new_row = [ingredient, amount, unit]
     if recipes.make_ingredients(id, new_row):
         return redirect("/modify/"+str(id))
-    else:
-        return render_template("error.html", message="Ei onnistunut.")
 
 
 @app.route("/delete_ingredient/<int:id>", methods=["POST"])
@@ -208,10 +209,9 @@ def delete_ingredient(id):
         ingr_id = request.form["ingr_id"]
     else:
         return render_template("error.html", message="Valitse rivi poistettavaksi.")
+
     if recipes.delete_ingredient(ingr_id):
         return redirect("/modify/"+str(id))
-    else:
-        return render_template("error.html", message="Ei onnistunut.")
 
 
 @app.route("/modify_instructions/<int:id>", methods=["POST"])
@@ -220,10 +220,12 @@ def modify_instructions(id):
     instructions = request.form["instructions"]
     if instructions.strip() == "":
         return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
-    elif recipes.change_instructions(id, instructions):
-        return redirect("/recipes/"+str(id))
-    else:
-        return render_template("error.html", message="Ei onnistunut")
+
+    if len(instructions) > 5000:
+            return render_template("error.html", message="Ohjeiden tulee käyttää 1-5000 merkkiä.")
+
+    if recipes.change_instructions(id, instructions):
+        return redirect("/modify/"+str(id))
         
 
 

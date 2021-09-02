@@ -47,7 +47,7 @@
 <br>
 Lisää muistiinpano:
 <form action="/add_note/{{ id }}", method="post">
-    <textarea name="note"rows="6" cols="30" maxlength="500">
+    <textarea name="note"rows="6" cols="30" maxlength="1000">
         Muistiinpanoja tähän
     </textarea>
     <input type="submit" value="Lisää muistiinpano">
@@ -79,6 +79,8 @@ Reseptin on lisännyt {{added_by  }}. Et voi muokata reseptiä.
 <br>
 {% else: %}
 Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä. 
+<br>
+
 <br>
 <form action="/add_to_library/{{ id }}", method="post">
     <input type="submit" value="Lisää omaan kirjastoon">
