@@ -142,32 +142,6 @@ def get_public(id):
     result = db.session.execute(sql, {"id":id})
     return result.fetchone()[0]
 
-# def make_recipe(name):
-#     user_id = users.user_id()
-#             return None
-#     sql = "INSERT INTO recipes (name, added_by) VALUES (:name, :user_id) RETURNING id"
-#     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
-#     recipe_id = recipe.first()[0]
-
-
-
-# Create a new recipe
-# def create(name, ingredients, steps):
-#     user_id = users.user_id()
-#     if user_id == 0:
-#         return None
-#     sql = "INSERT INTO recipes (name, added_by) VALUES (:name, :user_id) RETURNING id"
-#     recipe = db.session.execute(sql, {"name":name, "user_id":user_id})
-#     recipe_id = recipe.first()[0]
-
-#     if add_ingredients(recipe_id, ingredients) and add_instructions(recipe_id, steps):
-#         db.session.commit() 
-#         if add_to_library(user_id, recipe_id):
-#             return recipe_id
-#         else:
-#             return None
-#     else:
-#         return None
 
 # Create a new recipe
 def create(name, ingredients, steps):
@@ -222,27 +196,6 @@ def change_instructions(id, new_instructions):
         return True
     else:
         return False
-
-# Add ingredients to recipe
-def add_ingredients(id, ingredients):
-    for rows in ingredients.split("\n"):
-        if rows.strip() != "":
-            if rows.count(";") != 2:
-                return False
-            else:
-                cell = rows.strip().split(";")
-                if len(cell) != 3:
-                    continue
-                try:
-                    amount = float(cell[1])
-                except ValueError:
-                    return False
-                    break
-                sql = """INSERT INTO ingredients (ingredient, amount, unit, recipe_id)
-                    VALUES (:ingredient, :amount, :unit, :recipe_id)"""
-                db.session.execute(sql, {"ingredient":cell[0], "amount":amount, "unit":cell[2], "recipe_id":id})
-    print("lisätty")
-    return True
             
 # Add recipe to library
 def add_to_library(user_id, recipe_id):
@@ -295,22 +248,6 @@ def get_user_id(recipe_id):
     result = db.session.execute(sql, {"recipe_id": recipe_id})
     return result.fetchone()[0]
 
-#Delete ingredients
-def delete_ingredients(id):
-    sql = """DELETE FROM ingredients
-            WHERE recipe_id=:id"""
-    db.session.execute(sql, {"id": id})
-    return True
-
-
-#Change recipe's ingredients
-def change_ingredients(id, new_ingredients):
-    delete_ingredients(id)
-    if add_ingredients(id, new_ingredients):
-        db.session.commit()
-        return True
-    else:
-        return False
 
 #Change recipe's name
 def change_name(id, name):

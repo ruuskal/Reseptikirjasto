@@ -175,14 +175,6 @@ def modify_name(id):
     else:
         return render_template("error.html", message="Nimen vaihtaminen ei onnisutnut.")
 
-# @app.route("/modify_ingredients/<int:id>", methods=["POST"])
-# def modify_ingredients(id):
-#     users.check_csrf()
-#     new_ingredients = request.form["ingredients"]
-#     if recipes.change_ingredients(id, new_ingredients):
-#         return redirect("/recipes/"+str(id))
-#     else:
-#         return render_template("error.html", message="Ei onnistunut. Syötä uudet raaka-aineet muodossa raaka-aine;numero;raaka-aine")
 
 @app.route("/add_ingredient/<int:id>", methods=["POST"])
 def new_ingredient(id):
@@ -232,32 +224,7 @@ def modify_instructions(id):
         return redirect("/recipes/"+str(id))
     else:
         return render_template("error.html", message="Ei onnistunut")
-
-@app.route("/newrecipe", methods=["GET"])
-def newrecipe():
-    if users.user_id() == 0:
-        return render_template("error.html", message="Kirjaudu sisään.")
-    else:
-        return render_template("newrecipe.html")
         
-
-@app.route("/create_recipe", methods=["POST"])
-def send():
-    users.check_csrf()
-    name = request.form["name"]
-    if name.strip() == "":
-        return render_template("error.html", message="Reseptillä pitää olla nimi.")
-    ingredients_text = request.form["ingredients"]
-    if ingredients_text == "":
-        return render_template("error.html", message="Reseptillä pitää olla ainakin yksi ainesosa.")
-    steps = request.form["instructions"]
-    if steps.strip() == "":
-        return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
-    recipe_id = recipes.create(name, ingredients_text, steps)
-    if recipe_id is not None:
-        return redirect("/recipes/"+str(recipe_id))
-    else:
-        return render_template("error.html", message="Reseptin luominen epäonnistui. Tarkista raaka-aineiden kirjoitusasu.")
 
 
 @app.route("/recipes/<int:id>", methods=["GET"])
@@ -300,7 +267,7 @@ def show_recipe(id):
                                         public_status=public, added_by=added_by, is_own=is_own, in_library=in_library, notes=notes,
                                         stars=stars)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     recipes_list = recipes.get_own_recipes()
     user_id = users.user_id()
