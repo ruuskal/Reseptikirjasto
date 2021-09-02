@@ -157,13 +157,14 @@ def show_modify(id):
     if user_id == creator_id:
         recipe_name = recipes.get_name(id)
         old_ingredients = recipes.get_ingredients(id)
+        ingr_rows = len(old_ingredients)
         old_instructions = recipes.get_instructions(id)
         if recipes.get_public(id):
             public_status = "julkinen"
         else:
             public_status = "yksityinen" 
         return render_template("modify.html", name=recipe_name, id=id, old_ingredients=old_ingredients, old_instructions=old_instructions, 
-                                            public=public_status)
+                                            public=public_status, ingr_rows=ingr_rows)
     else:
         return render_template("error.html", message="Ei ole oma reseptisi, et voi muokata sitä.")
 
@@ -205,11 +206,14 @@ def new_ingredient(id):
 @app.route("/delete_ingredient/<int:id>", methods=["POST"])
 def delete_ingredient(id):
     users.check_csrf()
+    if int(request.form["ingr_rows"]) <  2:
+        return render_template("error.html", message="Et voi poistaa ainoaa ainesriviä. Luo uusi rivi ennen vanhan poistamista.")
+    
     if "ingr_id" in request.form:
         ingr_id = request.form["ingr_id"]
     else:
         return render_template("error.html", message="Valitse rivi poistettavaksi.")
-
+   
     if recipes.delete_ingredient(ingr_id):
         return redirect("/modify/"+str(id))
 
