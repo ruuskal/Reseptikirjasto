@@ -16,6 +16,12 @@ def get_visible_amount(id):
     result = db.session.execute(sql, {"id":id})
     return result.fetchone()[0]
 
+def get_rated_amount(id):
+    sql = """SELECT COUNT(user_id) FROM library
+            WHERE stars > 0 AND recipe_id=:id"""
+    result = db.session.execute(sql, {"id":id})
+    return result.fetchone()[0]
+
 def get_best(id):
     sql = """SELECT id, name, stars FROM recipes
                 WHERE (added_by=:id OR public='true') 

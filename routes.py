@@ -284,6 +284,7 @@ def show_recipe(id):
     in_library = False
     library_id = None
     notes = None
+    rated = recipes.get_rated_amount(id)
     if user_id == recipes.get_user_id(id): 
         allow = True 
         is_own = True 
@@ -311,7 +312,7 @@ def show_recipe(id):
         public = "yksityinen"
     return render_template("recipe.html", name=name, ingredients=ingredients, instructions=instructions, user_id=user_id , id=id, 
                                         public_status=public, added_by=added_by, is_own=is_own, in_library=in_library, notes=notes,
-                                        stars=stars)
+                                        stars=stars, rated=rated)
 
 @app.route("/", methods=["GET"])
 def index():
