@@ -14,6 +14,7 @@ def login(username, password):
             session["user_id"] = user.id
             session["user_name"] = username
             session["csrf"] = os.urandom(16).hex()
+            session["coef"] = 1
             return True
         else:
             return False
@@ -40,3 +41,5 @@ def user_name():
 def check_csrf():
     if session["csrf"] != request.form["csrf"]:
         abort(403)
+
+

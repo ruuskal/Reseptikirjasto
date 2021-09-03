@@ -1,10 +1,12 @@
 from db import db
 import users
 
+
+
 def delete_note(id):
     sql = """DELETE FROM notes
             WHERE id=:id"""
-    result = db.session.execute(sql, {"id":id})
+    db.session.execute(sql, {"id":id})
     db.session.commit()
     return True
 
@@ -111,23 +113,6 @@ def search_by_name(name):
             ORDER BY name"""
     result = db.session.execute(sql, {"name":name, "user_id":user_id })
     return result.fetchall()
-
-
-
-# # Search recipe with partially matching name
-# def search_by_name(name):
-#     user_id = users.user_id()
-#     name = "%" + name + "%"
-#     sql = """SELECT DISTINCT id, name, (SELECT COUNT (id) FROM recipes
-#             WHERE name ILIKE :name 
-#             AND (added_by=:user_id OR public='true')) 
-#             FROM recipes
-#             WHERE name ILIKE :name 
-#             AND (added_by=:user_id OR public='true')
-#             ORDER BY name"""
-#     result = db.session.execute(sql, {"name":name, "user_id":user_id })
-#     return result.fetchall()
-
 
 # Returns name of the recipes creator
 def get_creator(recipe_id):
@@ -245,12 +230,23 @@ def get_name(id):
     result = db.session.execute(sql, {"id": id})
     return result.fetchone()[0]
 
+def coef():
+    return users.session.get("coef", 0)
+
 # Return list of ingredients
-def get_ingredients(recipe_id):
-    sql = """SELECT ingredient, amount, unit, id FROM ingredients 
+def get_ingredients(recipe_id, coef):
+    if coef == 1:
+        sql_f = """SELECT ingredient, amount, unit, id FROM ingredients 
             WHERE recipe_id=:id"""
-    result = db.session.execute(sql, {"id": recipe_id})
-    return result.fetchall()
+        result = db.session.execute(sql_f, {"id": recipe_id})
+        return result.fetchall()
+    else:
+        sql_t = """SELECT ingredient, amount * :coef, unit, id FROM ingredients 
+            WHERE recipe_id=:id"""
+        result = db.session.execute(sql_t, {"id": recipe_id, "coef":coef})
+        users.session["coef"] = 1
+        return result.fetchall()
+
 
 #Return ordered list of instrctions
 def get_instructions(recipe_id):

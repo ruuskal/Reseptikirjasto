@@ -3,6 +3,8 @@ from flask import render_template, request, redirect
 import users, recipes
 
 
+
+
 @app.route("/make_recipe", methods=["GET", "POST"])
 def create_recipe():
 
@@ -255,11 +257,25 @@ def modify_instructions(id):
     if recipes.change_instructions(id, instructions):
         return redirect("/modify/"+str(id))
         
+@app.route("/multiply/<int:id>", methods=["POST"])
+def multiply(id):
+    users.check_csrf()
+    coef = request.form["coef"]
+    try:
+        float(coef)
+    except ValueError:
+        return render_template("error.html", message="Syötä luku.")
+    
+    if len(coef) > 4 or float(coef) == 0:
+        return render_template("error.html", message="Anna luku välilät 0.01 ja 9999.")
 
+    users.session["coef"] = float(coef)
+    return redirect("/recipes/"+str(id))
 
 @app.route("/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
     user_id  = users.user_id()
+    coef = recipes.coef()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään.")
     
@@ -284,7 +300,7 @@ def show_recipe(id):
         return render_template("error.html", message="Ei katseluoikeutta.")
 
     name = recipes.get_name(id)
-    ingredients = recipes.get_ingredients(id)
+    ingredients = recipes.get_ingredients(id, coef)
     instructions = recipes.get_instructions(id)
     added_by = recipes.get_creator(id)
     stars = recipes.get_stars(id)

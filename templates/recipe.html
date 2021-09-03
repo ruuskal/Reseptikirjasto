@@ -5,6 +5,12 @@
 <h2>{{ name }}</h2> Tähdet: {{ stars }} / 5.
 <br>
 <br>
+<form action="/multiply/{{ id }}" method="post">
+    Vaihda annoskoon kerrointa: 
+    <input type="text" name="coef" placeholder="0.5" required>
+    <input type="submit" value="Vaihda kerroin">
+    <input type="hidden" name="csrf" value="{{ session.csrf }}">
+</form>
 <table>
     <tr>
         <th>Raaka-aine</th>
