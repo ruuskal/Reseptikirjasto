@@ -89,12 +89,13 @@ def get_others(id):
 def search_by_ingredient(ingredient):
     ingr = "%"+ingredient+"%"
     user_id = users.user_id()
-    sql = """SELECT DISTINCT r.id, r.name FROM recipes r
+    sql = """SELECT DISTINCT r.id, r.name
+            FROM recipes r
             WHERE r.id IN 
                         (SELECT DISTINCT r.id FROM recipes r 
                         INNER JOIN ingredients i ON i.recipe_id=r.id 
                         WHERE i.ingredient ILIKE :ingredient) 
-            AND (r.public='true' OR r.added_by=:user_id) 
+            AND (r.public='true' OR r.added_by=:user_id)
             ORDER BY r.name"""
     result = db.session.execute(sql, {"ingredient":ingr, "user_id":user_id})
     return result.fetchall()
@@ -103,12 +104,30 @@ def search_by_ingredient(ingredient):
 def search_by_name(name):
     user_id = users.user_id()
     name = "%" + name + "%"
-    sql = """SELECT DISTINCT id, name FROM recipes
+    sql = """SELECT id, name
+            FROM recipes
             WHERE name ILIKE :name 
             AND (added_by=:user_id OR public='true')
             ORDER BY name"""
     result = db.session.execute(sql, {"name":name, "user_id":user_id })
     return result.fetchall()
+
+
+
+# # Search recipe with partially matching name
+# def search_by_name(name):
+#     user_id = users.user_id()
+#     name = "%" + name + "%"
+#     sql = """SELECT DISTINCT id, name, (SELECT COUNT (id) FROM recipes
+#             WHERE name ILIKE :name 
+#             AND (added_by=:user_id OR public='true')) 
+#             FROM recipes
+#             WHERE name ILIKE :name 
+#             AND (added_by=:user_id OR public='true')
+#             ORDER BY name"""
+#     result = db.session.execute(sql, {"name":name, "user_id":user_id })
+#     return result.fetchall()
+
 
 # Returns name of the recipes creator
 def get_creator(recipe_id):

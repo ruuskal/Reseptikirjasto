@@ -2,8 +2,8 @@
 {% block content %}
 <a href="/">Etusivulle</a>
 <br>
-<h2>Löydetyt reseptit hakusanalla {{ search_term }}:</h2>
+<h2>{{ search_result }}</h2>
 {% for recipe in recipes %}
-<ul><a href="/recipes/{{ recipe.id }}">{{ recipe.name }}</a></ul>
+<ul><a href="/recipes/{{ recipe.id }}">{{ recipe.name }}{{recipe.r_count}}</a></ul>
 {% endfor %}
 {% endblock %}

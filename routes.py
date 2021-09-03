@@ -16,11 +16,13 @@ def create_recipe():
 
         users.check_csrf()
         name = request.form["name"]
+        if name.strip() == "":
+            return render_template("error.html", message="Reseptillä pitää olla nimi.")
         if  3 > len(name) or len(name) > 50:
             return render_template("error.html", message="Nimen tulee olla 3-30 merkkiä pitkä.")
 
         lines = int(request.form["lines"])
-        if lines == -1 or lines >50:
+        if lines == -1 or lines > 50:
             return render_template("error.html", message="Reseptillä pitää olla 1-50 riviä aineksia.")
         ingredients = []
         row = 0
@@ -104,10 +106,10 @@ def add_note(recipe_id):
 
 @app.route("/public_recipes", methods=["GET"])
 def public_recipes():
-    if users.user_id() == 0:
+    id = users.user_id()
+    if id == 0:
         return render_template("error.html", message="Et ole kirjautunut sisään.")
     else:
-        id = users.user_id()
         public_recipes = recipes.get_public_recipes(id)
         visible_amount = recipes.get_visible_amount(id)
         best = recipes.get_best(id)
@@ -125,15 +127,37 @@ def add_recipe(id):
 def search_ingredient():
     users.check_csrf()
     ingredient = request.form["search_ingredient"]
+    if ingredient.strip() == "":
+        return render_template("error.html", message="Hakusana ei voi olla tyhjä.")
+    if len(ingredient.trim) < 3 or len(ingredient) > 50:
+        return render_template("error.html", message="Hakusanan tulee olla 3-50 merkkiä pitkä.") 
     result = recipes.search_by_ingredient(ingredient)
-    return render_template("results.html", recipes=result, search_term=ingredient)
+    
+    if not result:
+        search_result = "Ei löytynyt yhtään reseptiä haukusanalla '" + ingredient + "'."
+        return render_template("results.html", recipes=result, search_result=search_result)
+    else:
+        search_result = "Reseptit hakusanalla " + ingredient + "'."
+        return render_template("results.html", recipes=result, search_result=search_result)
 
-@app.route("/search", methods=["POST"])
+@app.route("/search_name", methods=["POST"])
 def search_name():
     users.check_csrf()
     name = request.form["search_name"]
+    if name.strip() == "":
+        return render_template("error.html", message="Hakusana ei voi olla tyhjä.")
+
+    if len(name) < 3 or len(name) > 30:
+        return render_template("error.html", message="Hakusanan tulee olla 3-30 merkkiä pitkä.") 
     result = recipes.search_by_name(name)
-    return render_template("results.html", recipes=result, search_term=name)
+
+    if not result:
+        search_result = "Ei löytynyt yhtään reseptiä haukusanalla '" + name + "'."
+        return render_template("results.html", recipes=result, search_result=search_result)
+    else:
+        search_result = "Reseptit hakusanalla '" + name + "'."
+
+    return render_template("results.html", recipes=result, search_result=search_result)
 
 @app.route("/delete_recipe/<int:id>", methods=["POST"])
 def delete_recipe(id):
@@ -235,13 +259,13 @@ def modify_instructions(id):
 
 @app.route("/recipes/<int:id>", methods=["GET"])
 def show_recipe(id):
-    if users.user_id() == 0:
+    user_id  = users.user_id()
+    if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään.")
     
     allow = False
     is_own = False
     in_library = False
-    user_id  = users.user_id()
     library_id = None
     notes = None
     if user_id == recipes.get_user_id(id): 
