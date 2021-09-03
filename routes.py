@@ -2,9 +2,6 @@ from app import app
 from flask import render_template, request, redirect
 import users, recipes
 
-
-
-
 @app.route("/make_recipe", methods=["GET", "POST"])
 def create_recipe():
 
@@ -18,9 +15,7 @@ def create_recipe():
 
         users.check_csrf()
         name = request.form["name"]
-        if name.strip() == "":
-            return render_template("error.html", message="Reseptillä pitää olla nimi.")
-        if  3 > len(name) or len(name) > 50:
+        if less_or_more(name, 3, 30):
             return render_template("error.html", message="Nimen tulee olla 3-30 merkkiä pitkä.")
 
         lines = int(request.form["lines"])
@@ -35,27 +30,31 @@ def create_recipe():
             a = "amount"+str(row)
 
             ingredient = request.form[i]
-            if ingredient.strip() == "":
-                return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
-                                                                " nimeä raaka-aine")
-            if len(ingredient) < 3 or len(ingredient) > 50:
+            if less_or_more(ingredient, 3, 50):
                 return render_template("error.html", message="Raaka-aineen tulee käyttää 3-50 merkkiä.")
+
             try:
-                amount = float(request.form[a])
+                amount_f = float(request.form[a])
             except ValueError:
                 return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
+            
+            amount = request.form[a]
+            if less_or_more(amount, 1, 4):
+                return render_template("error.html", message="Määrän tulee käyttää 1-4 merkkiä.")
 
             unit = request.form[u]
-            if len(unit) < 1 or len(unit) > 50:
+            if less_or_more(unit, 1, 50):
                 return render_template("error.html", message="Yksikön tulee käyttää 1-50 merkkiä.")
-            new_row = [ingredient, amount, unit]
+
+            new_row = [ingredient, amount_f, unit]
             ingredients.append(new_row)
             row += 1
 
         
         inst = request.form["instructions"]
-        if len(inst) < 1 or len(inst) > 5000:
-            return render_template("error.html", message="Ohjeiden tulee käyttää 1-5000 merkkiä.")
+        if less_or_more(inst, 1, 3000):
+            return render_template("error.html", message="Ohjeiden tulee käyttää 1-3000 merkkiä.")
+
         recipe_id = recipes.create(name, ingredients, inst)
         
         return redirect("/recipes/"+str(recipe_id))
@@ -93,16 +92,13 @@ def delete_from_library(recipe_id):
 def add_note(recipe_id):
     users.check_csrf()
     content = request.form["note"]
-    if content.strip() == "":
-        return render_template("error.html", message="Muistiinpano ei voi olla tyhjä.")
-    
-    if len(content) > 1000:
-        return render_template("error.html", message="Muistiinpano ei saa olla yli 1000 merkkiä.")
+    if less_or_more(content, 1, 1000):
+        return render_template("error.html", message="Muistiinpanon pitää olla 1-1000 merkkiä pitkä.")
 
     user_id = users.user_id()
-    id = recipes.get_library_id(user_id, recipe_id)
+    library_id = recipes.get_library_id(user_id, recipe_id)
     
-    recipes.create_note(content, id)
+    recipes.create_note(content, library_id)
     return redirect("/recipes/"+str(recipe_id))
 
 
@@ -125,13 +121,19 @@ def add_recipe(id):
     if recipes.add_to_library(user_id, id):
         return redirect("/")
 
+def less_or_more(word, min_length, max_length):
+    if word.strip() == "":
+        return True
+    if len(word) < min_length or len(word) > max_length:
+        return True
+    else:
+        return False 
+
 @app.route("/search_ingredient", methods=["POST"])
 def search_ingredient():
     users.check_csrf()
     ingredient = request.form["search_ingredient"]
-    if ingredient.strip() == "":
-        return render_template("error.html", message="Hakusana ei voi olla tyhjä.")
-    if len(ingredient.trim) < 3 or len(ingredient) > 50:
+    if less_or_more(ingredient, 3, 50):
         return render_template("error.html", message="Hakusanan tulee olla 3-50 merkkiä pitkä.") 
     result = recipes.search_by_ingredient(ingredient)
     
@@ -146,10 +148,7 @@ def search_ingredient():
 def search_name():
     users.check_csrf()
     name = request.form["search_name"]
-    if name.strip() == "":
-        return render_template("error.html", message="Hakusana ei voi olla tyhjä.")
-
-    if len(name) < 3 or len(name) > 30:
+    if less_or_more(name, 3, 30):
         return render_template("error.html", message="Hakusanan tulee olla 3-30 merkkiä pitkä.") 
     result = recipes.search_by_name(name)
 
@@ -182,7 +181,7 @@ def show_modify(id):
     creator_id = recipes.get_user_id(id)
     if user_id == creator_id:
         recipe_name = recipes.get_name(id)
-        old_ingredients = recipes.get_ingredients(id)
+        old_ingredients = recipes.get_ingredients(id, 1)
         ingr_rows = len(old_ingredients)
         old_instructions = recipes.get_instructions(id)
         if recipes.get_public(id):
@@ -198,9 +197,7 @@ def show_modify(id):
 def modify_name(id):
     users.check_csrf()
     name = request.form["name"]
-    if name.strip() == "":
-        return render_template("error.html", message="Reseptillä pitää olla nimi.")
-    elif len(name) < 3 or len(name) > 50:
+    if less_or_more(name, 3, 50):
             return render_template("error.html", message="Nimen tulee olla 3-50 merkkiä pitkä.")
     if recipes.change_name(id, name):
         return redirect("/modify/"+str(id))
@@ -210,10 +207,8 @@ def modify_name(id):
 def new_ingredient(id):
     users.check_csrf()
     ingredient = request.form["ingredient"]
-    if ingredient.strip() == "":
-        return render_template("error.html", message="Raaka-aineella täytyy olla nimi. Poista rivi tai" +
-                                                                " nimeä raaka-aine")
-    if len(ingredient) < 3 or len(ingredient) > 50:
+
+    if less_or_more(ingredient, 3, 50):
         return render_template("error.html", message="Raaka-aineen tulee käyttää 3-50 merkkiä.")
     try:
         float(request.form["amount"])
@@ -221,9 +216,13 @@ def new_ingredient(id):
         return render_template("error.html", message="Anna määrä numeroina, esim 0.5")
 
     amount = request.form["amount"]
+    if less_or_more(amount, 1, 4):
+        return render_template("error.html", message="Määrä voi käyttää korkeintaan 4 merkkiä.")
+
     unit = request.form["unit"]
-    if len(unit) > 50:
+    if less_or_more(unit, 1, 50):
         return render_template("error.html", message="Yksikön tulee käyttää 1-50 merkkiä.")
+
     new_row = [ingredient, amount, unit]
     if recipes.make_ingredients(id, new_row):
         return redirect("/modify/"+str(id))
@@ -248,11 +247,8 @@ def delete_ingredient(id):
 def modify_instructions(id):
     users.check_csrf()
     instructions = request.form["instructions"]
-    if instructions.strip() == "":
-        return render_template("error.html", message="Reseptillä pitää olla ohjeet.")
-
-    if len(instructions) > 5000:
-            return render_template("error.html", message="Ohjeiden tulee käyttää 1-5000 merkkiä.")
+    if less_or_more(instructions, 1, 3000):
+            return render_template("error.html", message="Ohjeiden tulee käyttää 1-3000 merkkiä.")
 
     if recipes.change_instructions(id, instructions):
         return redirect("/modify/"+str(id))
