@@ -76,15 +76,13 @@ def rate(r_id):
         return render_template("error.html", message="Arvion on oltava kokonaisluku väliltä 1-5")
     if 1 < stars > 5:
         return render_template("error.html", message="Arvion on oltava kokonaisluku väliltä 1-5")
-    user_id = users.user_id()
-    recipes.give_stars(r_id, stars, user_id)
+    recipes.give_stars(r_id, stars)
     return redirect("/recipes/"+str(r_id))
 
 @app.route("/delete_from_library/<int:recipe_id>", methods=["POST"])
 def delete_from_library(recipe_id):
     users.check_csrf()
-    user_id = users.user_id()
-    recipes.delete_from_library(user_id, recipe_id)
+    recipes.delete_from_library(recipe_id)
     return redirect("/")
 
 @app.route("/add_note/<int:recipe_id>", methods=["POST"])
@@ -95,8 +93,7 @@ def add_note(recipe_id):
         return render_template("error.html",
                                message="Muistiinpanon pitää olla 1-1000 merkkiä pitkä.")
 
-    user_id = users.user_id()
-    library_id = recipes.get_library_id(user_id, recipe_id)
+    library_id = recipes.get_library_id(recipe_id)
 
     recipes.create_note(content, library_id)
     return redirect("/recipes/"+str(recipe_id))
@@ -104,21 +101,19 @@ def add_note(recipe_id):
 
 @app.route("/public_recipes", methods=["GET"])
 def show_public():
-    user_id = users.user_id()
-    if user_id == 0:
+    if users.user_id() == 0:
         return render_template("error.html", message="Et ole kirjautunut sisään.")
 
-    public_recipes = recipes.get_public_recipes(user_id)
-    visible_amount = recipes.get_visible_amount(user_id)
-    best = recipes.get_best(user_id)
+    public_recipes = recipes.get_public_recipes()
+    visible_amount = recipes.get_visible_amount()
+    best = recipes.get_best()
     return render_template("public_recipes.html", public_recipes=public_recipes,
                            visible_amount=visible_amount, best=best)
 
 @app.route("/add_to_library/<int:r_id>", methods=["POST"])
 def add_recipe(r_id):
     users.check_csrf()
-    user_id = users.user_id()
-    recipes.add_to_library(user_id, r_id)
+    recipes.add_to_library(r_id)
     return redirect("/")
 
 def less_or_more(word, min_length, max_length):
@@ -177,7 +172,7 @@ def show_modify(r_id):
     user_id = users.user_id()
     if user_id == 0:
         return render_template("error.html", message="Kirjaudu sisään.")
-    creator_id = recipes.get_user_id(r_id)
+    creator_id = recipes.get_added_by(r_id)
     if user_id == creator_id:
         recipe_name = recipes.get_name(r_id)
         old_ingredients = recipes.get_ingredients(r_id, 1)
@@ -281,15 +276,15 @@ def show_recipe(r_id):
     library_id = None
     notes = None
     rated = recipes.get_rated_amount(r_id)
-    if user_id == recipes.get_user_id(r_id):
+    if user_id == recipes.get_added_by(r_id):
         allow = True
         is_own = True
-        library_id = recipes.get_library_id(user_id, r_id)
+        library_id = recipes.get_library_id(r_id)
         notes = recipes.get_notes(library_id)
-    elif  recipes.in_library(user_id, r_id):
+    elif  recipes.in_library(r_id):
         allow = True
         in_library = True
-        library_id = recipes.get_library_id(user_id, r_id)
+        library_id = recipes.get_library_id(r_id)
         notes = recipes.get_notes(library_id)
     elif recipes.get_public(r_id):
         allow = True
@@ -315,10 +310,9 @@ def show_recipe(r_id):
 @app.route("/", methods=["GET"])
 def index():
     recipes_list = recipes.get_own_recipes()
-    user_id = users.user_id()
-    others_recipes = recipes.get_others(user_id)
+    others_recipes = recipes.get_others()
     return render_template("index.html", own_recipes=recipes_list,
-                           user_id=user_id, others_recipes=others_recipes)
+                           others_recipes=others_recipes)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

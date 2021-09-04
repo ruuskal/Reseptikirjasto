@@ -8,7 +8,8 @@ def delete_note(note_id):
     db.session.commit()
 
 # Return number of recipes, that user can see
-def get_visible_amount(user_id):
+def get_visible_amount():
+    user_id = users.user_id()
     sql = """SELECT COUNT (DISTINCT id) FROM recipes
           WHERE added_by=:id OR public='true'"""
     result = db.session.execute(sql, {"id":user_id})
@@ -20,14 +21,16 @@ def get_rated_amount(r_id):
     result = db.session.execute(sql, {"id":r_id})
     return result.fetchone()[0]
 
-def get_best(user_id):
+def get_best():
+    user_id = users.user_id()
     sql = """SELECT id, name, stars FROM recipes
           WHERE (added_by=:user_id OR public='true') 
           AND stars = (SELECT MAX (stars) FROM recipes)"""
     result = db.session.execute(sql, {"user_id":user_id})
     return result.fetchall()
 
-def give_stars(recipe_id, stars, user_id):
+def give_stars(recipe_id, stars):
+    user_id = users.user_id()
     sql = """UPDATE library
             SET stars=:stars
             WHERE recipe_id=:recipe_id AND user_id=:user_id"""
@@ -45,7 +48,8 @@ def get_stars(r_id):
     result = db.session.execute(sql, {"id":r_id})
     return result.fetchone()[0]
 
-def delete_from_library(user_id, recipe_id):
+def delete_from_library(recipe_id):
+    user_id = users.user_id()
     sql = """DELETE FROM library
             WHERE user_id=:user_id AND recipe_id=:recipe_id"""
     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
@@ -63,14 +67,16 @@ def create_note(content, lib_id):
     db.session.execute(sql, {"content":content, "id":lib_id})
     db.session.commit()
 
-def get_library_id(user_id, recipe_id):
+def get_library_id(recipe_id):
+    user_id = users.user_id()
     sql = """SELECT id from library
             WHERE user_id=:user_id AND recipe_id=:recipe_id"""
     result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
     return result.fetchone()[0]
 
 # Check if recipe is in library
-def in_library(user_id, recipe_id):
+def in_library(recipe_id):
+    user_id = users.user_id()
     sql = """SELECT 1 FROM library
             WHERE user_id=:user_id AND recipe_id=:recipe_id"""
     result = db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
@@ -80,7 +86,8 @@ def in_library(user_id, recipe_id):
     return True
 
 # Return recipes, that are in library and not created by current user
-def get_others(user_id):
+def get_others():
+    user_id = users.user_id()
     sql = """SELECT DISTINCT r.id, r.name FROM recipes r
             INNER JOIN library l ON l.recipe_id=r.id
             WHERE r.added_by NOT IN (:user_id) AND l.user_id =:user_id
@@ -123,13 +130,14 @@ def get_creator(r_id):
     return result.fetchone()[0]
 
 # Return list of public recipes not in own library
-def get_public_recipes(r_id):
+def get_public_recipes():
+    user_id = users.user_id()
     sql = """SELECT DISTINCT r.id, r.name FROM recipes r
             WHERE r.id NOT IN (SELECT l.recipe_id FROM library l
-                                WHERE l.user_id = (:id))
+                                WHERE l.user_id = (:user_id))
             AND r.public='true'
             ORDER BY r.name"""
-    result = db.session.execute(sql, {"id":r_id})
+    result = db.session.execute(sql, {"user_id":user_id})
     return result.fetchall()
 
 def set_public(r_id, value):
@@ -193,7 +201,8 @@ def change_instructions(inst_id, new_instructions):
     db.session.commit()
 
 # Add recipe to library
-def add_to_library(user_id, recipe_id):
+def add_to_library(recipe_id):
+    user_id = users.user_id()
     sql = "INSERT INTO library (user_id, recipe_id) VALUES (:user_id, :recipe_id)"
     db.session.execute(sql, {"user_id":user_id, "recipe_id":recipe_id})
     db.session.commit()
@@ -242,7 +251,7 @@ def get_instructions(recipe_id):
     return result.fetchall()
 
 #Return id of the creator
-def get_user_id(recipe_id):
+def get_added_by(recipe_id):
     sql = """SELECT added_by FROM recipes
             WHERE id=:recipe_id"""
     result = db.session.execute(sql, {"recipe_id": recipe_id})
