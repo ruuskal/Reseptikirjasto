@@ -172,7 +172,7 @@ def create(name, ingredients, steps):
 
     add_instructions(recipe_id, steps)
     db.session.commit()
-    add_to_library(user_id, recipe_id)
+    add_to_library(recipe_id)
     return recipe_id
 
 def make_ingredients(ingr_id, ingredient):
