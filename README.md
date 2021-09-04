@@ -7,9 +7,10 @@ Reseptikirjasto on harjoitussovellus, jonka toteutus on vielä vaiheessa. Täll�
 - muokata ja poistaa luomiaan reseptejä
 - asettaa luomansa reseptin julkiseksi tai yksityiseksi
 - katsella muiden luomia julkisia reseptejä tallettaa niitä omaan kirjastoonsa
-- positaa muiden reseptejä omasta kirjastosta
+- poistaa muiden reseptejä omasta kirjastosta
 - liittää ja poistaa muistiinpanoja kirjastossa oleviin resepteihin
 - arvostella kirjastossa olevia reseptejä
+- vaihtaa kirjastossa olevan reseptin annoskokoa
 - hakea reseptejä nimen perusteella
 - hakea reseptejä ainesosan perusteella
 - nähdä parhaaksi arvioidut reseptit
