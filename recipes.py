@@ -22,9 +22,9 @@ def get_rated_amount(r_id):
 
 def get_best(user_id):
     sql = """SELECT id, name, stars FROM recipes
-          WHERE (added_by=:id OR public='true') 
+          WHERE (added_by=:user_id OR public='true') 
           AND stars = (SELECT MAX (stars) FROM recipes)"""
-    result = db.session.execute(sql, {"id":user_id})
+    result = db.session.execute(sql, {"user_id":user_id})
     return result.fetchall()
 
 def give_stars(recipe_id, stars, user_id):
@@ -174,7 +174,7 @@ def make_ingredients(ingr_id, ingredient):
     db.session.commit()
 
 # Add instructions to recipe
-def add_instructions(inst_id, steps):
+def add_instructions(r_id, steps):
     sequence = 0
     for step in steps.split(";"):
         step.strip()
@@ -182,7 +182,7 @@ def add_instructions(inst_id, steps):
             sequence += 1
             sql = """INSERT INTO instructions (step, sequence, recipe_id)
                 VALUES (:step, :sequence, :recipe_id)"""
-            db.session.execute(sql, {"step":step, "sequence":sequence, "recipe_id":inst_id})
+            db.session.execute(sql, {"step":step, "sequence":sequence, "recipe_id":r_id})
 
 # Change instructions
 def change_instructions(inst_id, new_instructions):

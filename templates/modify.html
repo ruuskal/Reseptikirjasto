@@ -9,9 +9,8 @@
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
-
-
-
+<br>
+<br>
 <form action="/delete_ingredient/{{ r_id }}" method="post">
     <table>
         <thead>
@@ -32,15 +31,13 @@
     {% endfor %}
     </tbody>
     </table>
-
     <input type="hidden" name="ingr_rows" value="{{ ingr_rows }}">
-    <input type="submit" value="Poista valittu rivi.">
+    <input type="submit" value="Poista valittu rivi">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br>
 
-
-
+<b>Anna uusi raaka-ainerivi:</b>
 <form action="/add_ingredient/{{ r_id }}" method="post">
     <tr>
         <td><input type="text" name="ingredient" placeholder="10% kermaa" minlength="3" maxlength="30" required></td>
@@ -48,23 +45,30 @@
         <td><input type="text" name="unit" placeholder="dl" minlength="1" maxlength="30" required></td>
     </tr>
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
-    <input type="submit" value="Lisää rivi.">
+    <input type="submit" value="Lisää rivi">
 </form>
 <br>
-
+<br>
+<br>
+<b>Nykyiset ohjeet:</b>
+<ol>
+{% for inst in old_instructions %}
+    <li>{{  inst[0] }}</li>
+{% endfor %}
+</ol>
 
  <br>
 <b>Anna uudet ohjeet.</b>Voit halutessasi jakaa ohjeet eri vaiheisiin merkillä ;
 <form action="/modify_instructions/{{ r_id }}" method="post">
     <textarea name="instructions" rows="8" cols="40" maxlength="1000" required>
-       {% for i in old_instructions %}
-       {{ i[0] }};
-       {% endfor %}
+        
     </textarea>
         <input type="submit" value="Vaihda ohjeet">
         <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
-<br><br>
+<br>
+<br>
+<br>
 Reseptisi on tällä hetkellä {{ public }}.
 <form action="/modify_public/{{ r_id }}" method="post">
     <label for="public_status">Valitse julkisuusstatus:</label>
@@ -75,7 +79,9 @@ Reseptisi on tällä hetkellä {{ public }}.
     <input type="submit" value="Vaihda julkisuusstatus">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
-<br><br>
+<br>
+<br>
+<br>
 <form action="/delete_recipe/{{ r_id }}" method="post">
     <input type="submit" value="Poista resepti">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
