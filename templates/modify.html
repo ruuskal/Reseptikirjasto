@@ -3,7 +3,7 @@
 <a href="/">Etusivulle</a>
 <br>
 <h2>{{ name }}</h2>
-<form action="/modify_name/{{ id }}" method="post">
+<form action="/modify_name/{{ r_id }}" method="post">
     <input type="text" name="name" placeholder="Uusi nimi" required>
     <input type="submit" value="Vaihda nimi">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
@@ -12,7 +12,7 @@
 
 
 
-<form action="/delete_ingredient/{{ id }}" method="post">
+<form action="/delete_ingredient/{{ r_id }}" method="post">
     <table>
         <thead>
         <tr>
@@ -41,7 +41,7 @@
 
 
 
-<form action="/add_ingredient/{{ id }}" method="post">
+<form action="/add_ingredient/{{ r_id }}" method="post">
     <tr>
         <td><input type="text" name="ingredient" placeholder="10% kermaa" minlength="3" maxlength="30" required></td>
         <td><input type="number"  name="amount" placeholder="0.5" min="0" step="0.01" required></td>
@@ -55,7 +55,7 @@
 
  <br>
 <b>Anna uudet ohjeet.</b>Voit halutessasi jakaa ohjeet eri vaiheisiin merkillä ;
-<form action="/modify_instructions/{{ id }}" method="post">
+<form action="/modify_instructions/{{ r_id }}" method="post">
     <textarea name="instructions" rows="8" cols="40" maxlength="1000" required>
        {% for i in old_instructions %}
        {{ i[0] }};
@@ -66,7 +66,7 @@
 </form>
 <br><br>
 Reseptisi on tällä hetkellä {{ public }}.
-<form action="/modify_public/{{ id }}" method="post">
+<form action="/modify_public/{{ r_id }}" method="post">
     <label for="public_status">Valitse julkisuusstatus:</label>
     <select name="public_status">
         <option value="False">Yksityinen</option>
@@ -76,7 +76,7 @@ Reseptisi on tällä hetkellä {{ public }}.
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
 <br><br>
-<form action="/delete_recipe/{{ id }}" method="post">
+<form action="/delete_recipe/{{ r_id }}" method="post">
     <input type="submit" value="Poista resepti">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>

@@ -5,7 +5,7 @@
 <h2>{{ name }}</h2> Arvosana: {{ stars }} / 5 (arvioita {{ rated }})
 <br>
 <br>
-<form action="/multiply/{{ id }}" method="post">
+<form action="/multiply/{{ r_id }}" method="post">
     Vaihda annoskoon kerrointa: 
     <input type="text" name="coef" placeholder="0.5" required>
     <input type="submit" value="Vaihda kerroin">
@@ -38,7 +38,7 @@
 {% if in_library or is_own: %}
 
 <h3>Muistiinpanot:</h3>
-<form action="/delete_note/{{ id }}", method="post">
+<form action="/delete_note/{{ r_id }}", method="post">
 <ol>
     {% for n in notes %}
     <li>{{ n.content }} 
@@ -52,7 +52,7 @@
 
 <br>
 Lisää muistiinpano:
-<form action="/add_note/{{ id }}", method="post">
+<form action="/add_note/{{ r_id }}", method="post">
     <textarea name="note"rows="6" cols="30" maxlength="1000">
         Muistiinpanoja tähän
     </textarea>
@@ -62,7 +62,7 @@ Lisää muistiinpano:
 <br>
 Arvostele resepti asteikolla 1-5:
 <br>
-<form action="/stars/{{ id }}", method="post">
+<form action="/stars/{{ r_id }}", method="post">
     <input type="number" name="stars" min="1" max="5">
     <input type="submit" value="Anna arvio">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
@@ -73,12 +73,12 @@ Arvostele resepti asteikolla 1-5:
 <br>
 Tämä on oma reseptisi ja se on tällä hetkellä {{ public_status }}.
 <br>
-<a href="/modify/{{ id }}">Poista tai muokkaa reseptiä</a>
+<a href="/modify/{{ r_id }}">Poista tai muokkaa reseptiä</a>
 <br>
 {% elif in_library: %}
 <br>
 Reseptin on lisännyt {{added_by  }}. Et voi muokata reseptiä.
-<form action="/delete_from_library/{{ id }}", method="post">
+<form action="/delete_from_library/{{ r_id }}", method="post">
     <input type="submit" value="Poista omasta kirjastosta">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
@@ -88,7 +88,7 @@ Reseptin on lisännyt {{ added_by }}. Et voi muokata reseptiä.
 <br>
 
 <br>
-<form action="/add_to_library/{{ id }}", method="post">
+<form action="/add_to_library/{{ r_id }}", method="post">
     <input type="submit" value="Lisää omaan kirjastoon">
     <input type="hidden" name="csrf" value="{{ session.csrf }}">
 </form>
