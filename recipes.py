@@ -24,8 +24,9 @@ def get_rated_amount(r_id):
 def get_best():
     user_id = users.user_id()
     sql = """SELECT id, name, stars FROM recipes
-          WHERE (added_by=:user_id OR public='true') 
-          AND stars = (SELECT MAX (stars) FROM recipes)"""
+          WHERE public='true'
+          AND stars = (SELECT MAX (stars) FROM recipes
+          WHERE public='true')"""
     result = db.session.execute(sql, {"user_id":user_id})
     return result.fetchall()
 
